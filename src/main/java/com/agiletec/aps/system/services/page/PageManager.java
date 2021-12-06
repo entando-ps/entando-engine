@@ -413,7 +413,7 @@ public class PageManager extends AbstractService implements IPageManager, GroupU
     @Override
     public void joinWidget(String pageCode, Widget widget, int pos) throws EntException {
         this.checkPagePos(pageCode, pos);
-        if (null == widget || null == widget.getType()) {
+        if (null == widget || null == widget.getTypeCode()) {
             throw new EntException("Invalid null value found in either the Widget or the widgetType");
         }
         try {

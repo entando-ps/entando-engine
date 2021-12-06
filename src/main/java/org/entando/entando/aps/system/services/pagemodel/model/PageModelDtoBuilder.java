@@ -67,8 +67,8 @@ public class PageModelDtoBuilder extends DtoBuilder<PageModel, PageModelDto> {
             return null;
         }
         DefaultWidgetDto defaultWidgetDto = new DefaultWidgetDto();
-        defaultWidgetDto.setCode(defaultWidget.getType().getCode());
-        defaultWidgetDto.setProperties(defaultWidget.getConfig()); 
+        defaultWidgetDto.setCode(defaultWidget.getTypeCode());
+        defaultWidgetDto.setProperties(defaultWidget.getConfig());
         return defaultWidgetDto;
     }
 

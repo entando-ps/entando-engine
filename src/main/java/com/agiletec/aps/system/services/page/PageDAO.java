@@ -173,9 +173,12 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
         if (null == typeCode) {
             return null;
         }
-        Widget widget = new Widget();
         WidgetType type = this.getWidgetTypeManager().getWidgetType(typeCode);
-        widget.setType(type);
+        if (null == type) {
+            return null;
+        }
+        Widget widget = new Widget();
+        widget.setTypeCode(typeCode);
         ApsProperties config = new ApsProperties();
         String configText = res.getString(startIndex++);
         if (null != configText && configText.trim().length() > 0) {
@@ -638,7 +641,7 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
             for (int i = 0; i < widgets.length; i++) {
                 Widget widget = widgets[i];
                 if (widget != null) {
-                    if (null == widget.getType()) {
+                    if (null == widget.getTypeCode()) {
                         _logger.error("Widget Type null when adding widget on frame '{}' of page '{}'", i, page.getCode());
                         continue;
                     }
@@ -704,8 +707,9 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
     private void valueAddWidgetStatement(String pageCode, int pos, Widget widget, PreparedStatement stat) throws Throwable {
         stat.setString(1, pageCode);
         stat.setInt(2, pos);
-        stat.setString(3, widget.getType().getCode());
-        if (!widget.getType().isLogic()) {
+        stat.setString(3, widget.getTypeCode());
+        WidgetType type = this.getWidgetTypeManager().getWidgetType(widget.getTypeCode());
+        if (!type.isLogic()) {
             String config = null;
             if (null != widget.getConfig()) {
                 config = widget.getConfig().toXml();

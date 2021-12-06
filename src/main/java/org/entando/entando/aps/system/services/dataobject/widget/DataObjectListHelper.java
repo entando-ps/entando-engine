@@ -295,8 +295,8 @@ public class DataObjectListHelper extends BaseDataListHelper implements IDataObj
         IPage page = (null != reqCtx) ? (IPage) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_PAGE) : null;
         StringBuilder cacheKey = (null != page) ? new StringBuilder(page.getCode()) : new StringBuilder("NOTFOUND");
         Widget currentWidget = (null != reqCtx) ? (Widget) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_WIDGET) : null;
-        if (null != currentWidget && null != currentWidget.getType()) {
-            cacheKey.append("_").append(currentWidget.getType().getCode());
+        if (null != currentWidget && null != currentWidget.getTypeCode()) {
+            cacheKey.append("_").append(currentWidget.getTypeCode());
         }
         if (null != reqCtx) {
             Integer frame = (Integer) reqCtx.getExtraParam(SystemConstants.EXTRAPAR_CURRENT_FRAME);

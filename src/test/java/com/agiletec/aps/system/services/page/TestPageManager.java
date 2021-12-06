@@ -127,7 +127,7 @@ class TestPageManager extends BaseTestCase {
         PageTestUtil.comparePages(pageToAdd, addedPage, false);
         PageTestUtil.comparePageMetadata(pageToAdd.getMetadata(), addedPage.getMetadata(), 0);
         assertEquals(widgetToAdd.getConfig(), addedPage.getWidgets()[0].getConfig());
-        assertEquals(widgetToAdd.getType().getCode(), addedPage.getWidgets()[0].getType().getCode());
+        assertEquals(widgetToAdd.getTypeCode(), addedPage.getWidgets()[0].getTypeCode());
         assertEquals(8, addedPage.getPosition());
 
         pageToAdd = (Page) pageToAdd.clone();
@@ -137,7 +137,7 @@ class TestPageManager extends BaseTestCase {
         PageTestUtil.comparePages(pageToAdd, addedPage, false);
         PageTestUtil.comparePageMetadata(pageToAdd.getMetadata(), addedPage.getMetadata(), 0);
         assertEquals(widgetToAdd.getConfig(), addedPage.getWidgets()[0].getConfig());
-        assertEquals(widgetToAdd.getType().getCode(), addedPage.getWidgets()[0].getType().getCode());
+        assertEquals(widgetToAdd.getTypeCode(), addedPage.getWidgets()[0].getTypeCode());
         assertEquals(9, addedPage.getPosition());
 
         pageToAdd = (Page) pageToAdd.clone();
@@ -147,7 +147,7 @@ class TestPageManager extends BaseTestCase {
         assertNotNull(_pageManager.getDraftPage(addedPage.getCode()));
         assertNotNull(pageToAdd.getMetadata());
         assertEquals(widgetToAdd.getConfig(), addedPage.getWidgets()[0].getConfig());
-        assertEquals(widgetToAdd.getType().getCode(), addedPage.getWidgets()[0].getType().getCode());
+        assertEquals(widgetToAdd.getTypeCode(), addedPage.getWidgets()[0].getTypeCode());
         assertEquals(10, addedPage.getPosition());
     }
 
@@ -572,7 +572,7 @@ class TestPageManager extends BaseTestCase {
             assertEquals(onlineWidgets.length + 1, draftWidgets.length);
             Widget extracted = pagina_1.getWidgets()[frame];
             assertNotNull(extracted);
-            assertEquals("login_form", extracted.getType().getCode());
+            assertEquals("login_form", extracted.getTypeCode());
 
             this._pageManager.moveWidget(pageCode, frame, frame - 1);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -587,7 +587,7 @@ class TestPageManager extends BaseTestCase {
             assertNull(pagina_1.getWidgets()[frame]);
             extracted = pagina_1.getWidgets()[frame - 1];
             assertNotNull(extracted);
-            assertEquals("login_form", extracted.getType().getCode());
+            assertEquals("login_form", extracted.getTypeCode());
 
             this._pageManager.moveWidget(pageCode, frame - 1, frame);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -602,7 +602,7 @@ class TestPageManager extends BaseTestCase {
             assertNull(pagina_1.getWidgets()[frame - 1]);
             extracted = pagina_1.getWidgets()[frame];
             assertNotNull(extracted);
-            assertEquals("login_form", extracted.getType().getCode());
+            assertEquals("login_form", extracted.getTypeCode());
 
             this._pageManager.removeWidget(pageCode, frame);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -725,9 +725,8 @@ class TestPageManager extends BaseTestCase {
     }
 
     private Widget getWidgetForTest(String widgetTypeCode, ApsProperties config) throws Throwable {
-        WidgetType type = this._widgetTypeManager.getWidgetType(widgetTypeCode);
         Widget widget = new Widget();
-        widget.setType(type);
+        widget.setTypeCode(widgetTypeCode);
         if (null != config) {
             widget.setConfig(config);
         }
