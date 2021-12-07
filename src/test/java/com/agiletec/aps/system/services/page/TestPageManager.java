@@ -27,9 +27,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
-import org.entando.entando.aps.system.services.widgettype.WidgetType;
-
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.services.mock.MockWidgetsDAO;
 import com.agiletec.aps.system.SystemConstants;
@@ -119,7 +116,7 @@ class TestPageManager extends BaseTestCase {
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel,
                 true, "pagina temporanea", null, null, false, null, null);
         ApsProperties config = PageTestUtil.createProperties("actionPath", "/myJsp.jsp", "param1", "value1");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this._widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         Widget[] widgets = {widgetToAdd};
         Page pageToAdd = PageTestUtil.createPage("temp", parentForNewPage, "free", pageModel, metadata, widgets);
         _pageManager.addPage(pageToAdd);
@@ -163,7 +160,7 @@ class TestPageManager extends BaseTestCase {
         onlineMetadata.setShowable(true);
 
         ApsProperties config = PageTestUtil.createProperties("actionPath", "/myJsp.jsp", "param1", "value1");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this._widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         pageToUpdate.getWidgets()[0] = widgetToAdd;
         _pageManager.setPageOnline(pageToUpdate.getCode());
 
@@ -804,11 +801,9 @@ class TestPageManager extends BaseTestCase {
     private void init() {
         this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
         this._pageModelManager = (IPageModelManager) this.getService(SystemConstants.PAGE_MODEL_MANAGER);
-        this._widgetTypeManager = (IWidgetTypeManager) this.getService(SystemConstants.WIDGET_TYPE_MANAGER);
     }
 
     private IPageManager _pageManager = null;
     private IPageModelManager _pageModelManager = null;
-    private IWidgetTypeManager _widgetTypeManager;
 
 }
