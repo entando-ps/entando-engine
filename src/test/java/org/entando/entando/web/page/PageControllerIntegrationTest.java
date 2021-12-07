@@ -18,7 +18,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -71,7 +70,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RestMediaTypes;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -84,9 +82,6 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
     private IPageManager pageManager;
-
-    @Autowired
-    private IWidgetTypeManager widgetTypeManager;
 
     @Autowired
     private IPageModelManager pageModelManager;
@@ -1544,13 +1539,13 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
         }
         IPage parentPage = pageManager.getDraftPage(parent);
         if (null == pageModel) {
-            pageModel = parentPage.getMetadata().getModel();
+            pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
         }
         PageMetadata metadata = PageTestUtil
                 .createPageMetadata(pageModel, true, pageCode + "_title", null, null, false, null, null);
         ApsProperties config = new ApsProperties();
         config.put("actionPath", "/mypage.jsp");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this.widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         if (viewPage) {
             pageModel.setMainFrame(0);
             widgetToAdd.setConfig(null);
@@ -1561,7 +1556,7 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
         } else {
             widgets[0] = widgetToAdd;
         }
-        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), group, metadata, widgets);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), group, pageModel, metadata, widgets);
         return pageToAdd;
     }
 

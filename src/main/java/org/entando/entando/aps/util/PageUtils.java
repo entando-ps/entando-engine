@@ -18,6 +18,8 @@ import com.agiletec.aps.system.services.page.PageMetadata;
 import com.agiletec.aps.system.services.page.Widget;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import java.util.List;
+import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
+import org.entando.entando.aps.system.services.widgettype.WidgetType;
 import org.entando.entando.aps.system.services.widgettype.WidgetTypeParameter;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -34,19 +36,20 @@ public class PageUtils {
      * configuration of the page.
      *
      * @param page The page to check.
+     * @param model
      * @param viewerWidgetCode The code of the viewer widget (optional)
+     * @param widgetTypeManager
      * @return True if the page can publish free content, false else.
      */
-    public static boolean isDraftFreeViewerPage(IPage page, String viewerWidgetCode) {
+    public static boolean isDraftFreeViewerPage(IPage page, PageModel model, String viewerWidgetCode, IWidgetTypeManager widgetTypeManager) {
         if (page.isOnlineInstance()) {
             logger.warn("this check expects a draft instance of the page");
             return false;
         }
         boolean found = false;
-        PageMetadata metadata = page.getMetadata();
         Widget[] widgets = page.getWidgets();
-        if (metadata != null) {
-            found = isFreeViewerPage(metadata.getModel(), widgets, viewerWidgetCode);
+        if (model != null) {
+            found = isFreeViewerPage(model, widgets, viewerWidgetCode, widgetTypeManager);
         }
         return found;
     }
@@ -56,19 +59,20 @@ public class PageUtils {
      * configuration of the page.
      *
      * @param page The page to check.
+     * @param model 
      * @param viewerWidgetCode The code of the viewer widget (optional)
+     * @param widgetTypeManager
      * @return True if the page can publish free content, false else.
      */
-    public static boolean isOnlineFreeViewerPage(IPage page, String viewerWidgetCode) {
+    public static boolean isOnlineFreeViewerPage(IPage page, PageModel model, String viewerWidgetCode, IWidgetTypeManager widgetTypeManager) {
         if (!page.isOnlineInstance()) {
             logger.warn("this check expects an online instance of the page");
             return false;
         }
         boolean found = false;
-        PageMetadata metadata = page.getMetadata();
         Widget[] widgets = page.getWidgets();
-        if (metadata != null) {
-            found = isFreeViewerPage(metadata.getModel(), widgets, viewerWidgetCode);
+        if (model != null) {
+            found = isFreeViewerPage(model, widgets, viewerWidgetCode, widgetTypeManager);
         }
         return found;
     }
@@ -82,7 +86,7 @@ public class PageUtils {
      * @param viewerWidgetCode The code of the viewer widget (optional)
      * @return True if the page can publish free content, false else.
      */
-    public static boolean isFreeViewerPage(PageModel model, Widget[] widgets, String viewerWidgetCode) {
+    public static boolean isFreeViewerPage(PageModel model, Widget[] widgets, String viewerWidgetCode, IWidgetTypeManager widgetTypeManager) {
         try {
             if (model != null && widgets != null) {
                 int mainFrame = model.getMainFrame();
@@ -93,10 +97,14 @@ public class PageUtils {
                 if (null == viewer) {
                     return false;
                 }
-                boolean isRightCode = null == viewerWidgetCode || viewer.getType().getCode().equals(viewerWidgetCode);
-                String actionName = viewer.getType().getAction();
+                boolean isRightCode = null == viewerWidgetCode || viewer.getTypeCode().equals(viewerWidgetCode);
+                WidgetType type = widgetTypeManager.getWidgetType(viewer.getTypeCode());
+                if (null == type) {
+                    return false;
+                }
+                String actionName = type.getAction();
                 boolean isRightAction = (null != actionName && actionName.toLowerCase().indexOf("viewer") >= 0);
-                List<WidgetTypeParameter> typeParameters = viewer.getType().getTypeParameters();
+                List<WidgetTypeParameter> typeParameters = type.getTypeParameters();
                 if ((isRightCode || isRightAction) && (null != typeParameters && !typeParameters.isEmpty()) && (null == viewer.getConfig()
                         || viewer.getConfig().isEmpty())) {
                     return true;

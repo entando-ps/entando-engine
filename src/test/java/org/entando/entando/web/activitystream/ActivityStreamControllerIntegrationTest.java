@@ -32,7 +32,6 @@ import com.jayway.jsonpath.JsonPath;
 import java.sql.Timestamp;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 import org.entando.entando.aps.system.services.activitystream.ISocialActivityStreamManager;
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
 import org.entando.entando.web.AbstractControllerIntegrationTest;
 import org.entando.entando.web.utils.OAuth2TestUtils;
 
@@ -65,9 +64,6 @@ class ActivityStreamControllerIntegrationTest extends AbstractControllerIntegrat
 
     @Autowired
     private IPageModelManager pageModelManager;
-
-    @Autowired
-    private IWidgetTypeManager widgetTypeManager;
 
     @Autowired
     private IActionLogManager actionLogManager;
@@ -343,13 +339,14 @@ class ActivityStreamControllerIntegrationTest extends AbstractControllerIntegrat
     protected Page createPage(String pageCode, PageModel pageModel) {
         IPage parentPage = pageManager.getDraftPage("service");
         if (null == pageModel) {
-            pageModel = parentPage.getMetadata().getModel();
+            pageModel = this.pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
         }
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel, true, pageCode + "_title", null, null, false, null, null);
-        ApsProperties config = PageTestUtil.createProperties("modelId", "default", "contentId", "EVN24");
-        Widget widgetToAdd = PageTestUtil.createWidget("content_viewer", config, this.widgetTypeManager);
+        ApsProperties config = new ApsProperties();
+		config.setProperty("actionPath", "/myJsp.jsp");
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         Widget[] widgets = {widgetToAdd};
-        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", metadata, widgets);
+        Page pageToAdd = PageTestUtil.createPage(pageCode, parentPage.getCode(), "free", pageModel, metadata, widgets);
         return pageToAdd;
     }
 

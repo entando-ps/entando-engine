@@ -132,7 +132,7 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
     protected int getWidgetArrayLength(PageMetadata metadata) {
         int numFrames = -1;
         if (metadata != null) {
-            PageModel model = metadata.getModel();
+            PageModel model = this.getPageModelManager().getPageModel(metadata.getModelCode());
             if (model != null) {
                 numFrames = model.getFrames().length;
             }
@@ -174,9 +174,12 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
         if (null == typeCode) {
             return null;
         }
-        Widget widget = new Widget();
         WidgetType type = this.getWidgetTypeManager().getWidgetType(typeCode);
-        widget.setType(type);
+        if (null == type) {
+            return null;
+        }
+        Widget widget = new Widget();
+        widget.setTypeCode(typeCode);
         ApsProperties config = new ApsProperties();
         String configText = res.getString(startIndex++);
         if (null != configText && configText.trim().length() > 0) {
@@ -554,7 +557,7 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
                 }
                 stat.setString(index++, pageMetadata.getGroup());
                 stat.setString(index++, pageMetadata.getTitles().toXml());
-                stat.setString(index++, pageMetadata.getModel().getCode());
+                stat.setString(index++, pageMetadata.getModelCode());
                 if (pageMetadata.isShowable()) {
                     stat.setInt(index++, 1);
                 } else {
@@ -591,7 +594,8 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
             throw new EntException(msg, t);
         }
         pageMetadata.setTitles(titles);
-        pageMetadata.setModel(this.getPageModelManager().getPageModel(res.getString(index++)));
+        String pageModelCode = res.getString(index++);
+        pageMetadata.setModelCode(pageModelCode);
         Integer showable = res.getInt(index++);
         pageMetadata.setShowable(showable == 1);
         String extraConfig = res.getString(index++);
@@ -639,7 +643,7 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
             for (int i = 0; i < widgets.length; i++) {
                 Widget widget = widgets[i];
                 if (widget != null) {
-                    if (null == widget.getType()) {
+                    if (null == widget.getTypeCode()) {
                         _logger.error("Widget Type null when adding widget on frame '{}' of page '{}'", i, page.getCode());
                         continue;
                     }
@@ -705,8 +709,9 @@ public class PageDAO extends AbstractDAO implements IPageDAO {
     private void valueAddWidgetStatement(String pageCode, int pos, Widget widget, PreparedStatement stat) throws Throwable {
         stat.setString(1, pageCode);
         stat.setInt(2, pos);
-        stat.setString(3, widget.getType().getCode());
-        if (!widget.getType().isLogic()) {
+        stat.setString(3, widget.getTypeCode());
+        WidgetType type = this.getWidgetTypeManager().getWidgetType(widget.getTypeCode());
+        if (!type.isLogic()) {
             String config = null;
             if (null != widget.getConfig()) {
                 config = widget.getConfig().toXml();

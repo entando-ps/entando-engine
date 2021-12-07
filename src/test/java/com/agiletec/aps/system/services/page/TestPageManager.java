@@ -30,15 +30,13 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 
-import org.entando.entando.aps.system.services.widgettype.IWidgetTypeManager;
-import org.entando.entando.aps.system.services.widgettype.WidgetType;
-
 import com.agiletec.aps.BaseTestCase;
 import com.agiletec.aps.services.mock.MockWidgetsDAO;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.IManager;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.group.Group;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
 import org.junit.jupiter.api.Assertions;
@@ -117,20 +115,20 @@ class TestPageManager extends BaseTestCase {
     private void checkAddPage() throws Throwable {
         IPage parentPage = _pageManager.getDraftPage("service");
         String parentForNewPage = parentPage.getParentCode();
-        PageModel pageModel = parentPage.getMetadata().getModel();
+        PageModel pageModel = this._pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel,
                 true, "pagina temporanea", null, null, false, null, null);
         ApsProperties config = PageTestUtil.createProperties("actionPath", "/myJsp.jsp", "param1", "value1");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this._widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         Widget[] widgets = {widgetToAdd};
-        Page pageToAdd = PageTestUtil.createPage("temp", parentForNewPage, "free", metadata, widgets);
+        Page pageToAdd = PageTestUtil.createPage("temp", parentForNewPage, "free", pageModel, metadata, widgets);
         _pageManager.addPage(pageToAdd);
 
         IPage addedPage = _pageManager.getDraftPage("temp");
         PageTestUtil.comparePages(pageToAdd, addedPage, false);
         PageTestUtil.comparePageMetadata(pageToAdd.getMetadata(), addedPage.getMetadata(), 0);
         assertEquals(widgetToAdd.getConfig(), addedPage.getWidgets()[0].getConfig());
-        assertEquals(widgetToAdd.getType().getCode(), addedPage.getWidgets()[0].getType().getCode());
+        assertEquals(widgetToAdd.getTypeCode(), addedPage.getWidgets()[0].getTypeCode());
         assertEquals(8, addedPage.getPosition());
 
         pageToAdd = (Page) pageToAdd.clone();
@@ -140,7 +138,7 @@ class TestPageManager extends BaseTestCase {
         PageTestUtil.comparePages(pageToAdd, addedPage, false);
         PageTestUtil.comparePageMetadata(pageToAdd.getMetadata(), addedPage.getMetadata(), 0);
         assertEquals(widgetToAdd.getConfig(), addedPage.getWidgets()[0].getConfig());
-        assertEquals(widgetToAdd.getType().getCode(), addedPage.getWidgets()[0].getType().getCode());
+        assertEquals(widgetToAdd.getTypeCode(), addedPage.getWidgets()[0].getTypeCode());
         assertEquals(9, addedPage.getPosition());
 
         pageToAdd = (Page) pageToAdd.clone();
@@ -150,13 +148,14 @@ class TestPageManager extends BaseTestCase {
         assertNotNull(_pageManager.getDraftPage(addedPage.getCode()));
         assertNotNull(pageToAdd.getMetadata());
         assertEquals(widgetToAdd.getConfig(), addedPage.getWidgets()[0].getConfig());
-        assertEquals(widgetToAdd.getType().getCode(), addedPage.getWidgets()[0].getType().getCode());
+        assertEquals(widgetToAdd.getTypeCode(), addedPage.getWidgets()[0].getTypeCode());
         assertEquals(10, addedPage.getPosition());
     }
 
     private void checkUpdatePage() throws Exception {
         Page dbPage = (Page) _pageManager.getDraftPage("temp");
-        Page pageToUpdate = PageTestUtil.createPage("temp", dbPage.getParentCode(), "free", dbPage.getMetadata().clone(), PageTestUtil
+        PageModel pageModel = this._pageModelManager.getPageModel(dbPage.getMetadata().getModelCode());
+        Page pageToUpdate = PageTestUtil.createPage("temp", dbPage.getParentCode(), "free", pageModel, dbPage.getMetadata().clone(), PageTestUtil
                 .copyArray(dbPage.getWidgets()));
         pageToUpdate.setPosition(dbPage.getPosition());
         PageMetadata onlineMetadata = pageToUpdate.getMetadata();
@@ -164,7 +163,7 @@ class TestPageManager extends BaseTestCase {
         onlineMetadata.setShowable(true);
 
         ApsProperties config = PageTestUtil.createProperties("actionPath", "/myJsp.jsp", "param1", "value1");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this._widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         pageToUpdate.getWidgets()[0] = widgetToAdd;
         _pageManager.setPageOnline(pageToUpdate.getCode());
 
@@ -487,11 +486,11 @@ class TestPageManager extends BaseTestCase {
 
     private IPage createPageForTest(String code, String parentCode) throws Throwable {
         IPage prototype = _pageManager.getDraftPage("service");
-        PageModel pageModel = prototype.getMetadata().getModel();
+        PageModel pageModel = this._pageModelManager.getPageModel(prototype.getMetadata().getModelCode());
         PageMetadata metadata = PageTestUtil.createPageMetadata(pageModel,
                 true, "pagina temporanea", null, null, false, null, null);
         Widget[] widgets = new Widget[pageModel.getFrames().length];
-        return PageTestUtil.createPage(code, parentCode, Group.FREE_GROUP_NAME, metadata, widgets);
+        return PageTestUtil.createPage(code, parentCode, Group.FREE_GROUP_NAME, pageModel, metadata, widgets);
     }
 
     @Test
@@ -575,7 +574,7 @@ class TestPageManager extends BaseTestCase {
             assertEquals(onlineWidgets.length + 1, draftWidgets.length);
             Widget extracted = pagina_1.getWidgets()[frame];
             assertNotNull(extracted);
-            assertEquals("login_form", extracted.getType().getCode());
+            assertEquals("login_form", extracted.getTypeCode());
 
             this._pageManager.moveWidget(pageCode, frame, frame - 1);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -590,7 +589,7 @@ class TestPageManager extends BaseTestCase {
             assertNull(pagina_1.getWidgets()[frame]);
             extracted = pagina_1.getWidgets()[frame - 1];
             assertNotNull(extracted);
-            assertEquals("login_form", extracted.getType().getCode());
+            assertEquals("login_form", extracted.getTypeCode());
 
             this._pageManager.moveWidget(pageCode, frame - 1, frame);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -605,7 +604,7 @@ class TestPageManager extends BaseTestCase {
             assertNull(pagina_1.getWidgets()[frame - 1]);
             extracted = pagina_1.getWidgets()[frame];
             assertNotNull(extracted);
-            assertEquals("login_form", extracted.getType().getCode());
+            assertEquals("login_form", extracted.getTypeCode());
 
             this._pageManager.removeWidget(pageCode, frame);
             pagina_1 = this._pageManager.getDraftPage(pageCode);
@@ -682,9 +681,9 @@ class TestPageManager extends BaseTestCase {
         PagesStatus status = this._pageManager.getPagesStatus();
         try {
             IPage parentPage = _pageManager.getDraftRoot();
-            PageModel pageModel = parentPage.getMetadata().getModel();
+            PageModel pageModel = this._pageModelManager.getPageModel(parentPage.getMetadata().getModelCode());
             PageMetadata draftMeta = PageTestUtil.createPageMetadata(pageModel, true, "pagina temporanea", null, null, false, null, null);
-            Page pageToAdd = PageTestUtil.createPage(testCode, parentPage.getCode(), "free", draftMeta, new Widget[pageModel.getFrames().length]);
+            Page pageToAdd = PageTestUtil.createPage(testCode, parentPage.getCode(), "free", pageModel, draftMeta, new Widget[pageModel.getFrames().length]);
             _pageManager.addPage(pageToAdd);
             PagesStatus newStatus = this._pageManager.getPagesStatus();
             assertEquals(status.getOnline(), newStatus.getOnline());
@@ -728,9 +727,8 @@ class TestPageManager extends BaseTestCase {
     }
 
     private Widget getWidgetForTest(String widgetTypeCode, ApsProperties config) throws Throwable {
-        WidgetType type = this._widgetTypeManager.getWidgetType(widgetTypeCode);
         Widget widget = new Widget();
-        widget.setType(type);
+        widget.setTypeCode(widgetTypeCode);
         if (null != config) {
             widget.setConfig(config);
         }
@@ -831,10 +829,10 @@ class TestPageManager extends BaseTestCase {
     @BeforeEach
     private void init() {
         this._pageManager = (IPageManager) this.getService(SystemConstants.PAGE_MANAGER);
-        this._widgetTypeManager = (IWidgetTypeManager) this.getService(SystemConstants.WIDGET_TYPE_MANAGER);
+        this._pageModelManager = (IPageModelManager) this.getService(SystemConstants.PAGE_MODEL_MANAGER);
     }
 
     private IPageManager _pageManager = null;
-    private IWidgetTypeManager _widgetTypeManager;
+    private IPageModelManager _pageModelManager = null;
 
 }

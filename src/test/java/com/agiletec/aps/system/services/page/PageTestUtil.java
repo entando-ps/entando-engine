@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
 import org.apache.commons.lang3.time.DateUtils;
-import org.entando.entando.aps.system.services.widgettype.*;
 
 import java.util.*;
 
@@ -70,10 +69,10 @@ public class PageTestUtil {
 		} else {
 			assertEquals(expected.getTitles(), actual.getTitles());
 			assertEquals(expected.getExtraGroups(), actual.getExtraGroups());
-			if (expected.getModel() == null) {
-				assertNull(actual.getModel());
+			if (expected.getModelCode() == null) {
+				assertNull(actual.getModelCode());
 			} else {
-				assertEquals(expected.getModel().getCode(), actual.getModel().getCode());
+				assertEquals(expected.getModelCode(), actual.getModelCode());
 			}
 			assertEquals(expected.isShowable(), actual.isShowable());
 			assertEquals(expected.isUseExtraTitles(), actual.isUseExtraTitles());
@@ -101,7 +100,7 @@ public class PageTestUtil {
 			assertEquals(expected.length, actual.length);
 			for (int i = 0; i < expected.length; i++) {
 				assertEquals(expected[i].getConfig(), actual[i].getConfig());
-				assertEquals(expected[i].getType().getCode(), actual[i].getType().getCode());
+				assertEquals(expected[i].getTypeCode(), actual[i].getTypeCode());
 			}
 		}
 	}
@@ -121,15 +120,16 @@ public class PageTestUtil {
 		return pages.get(code);
 	}
 
-	public static Page createPage(String code, String parentPageCode, String groupName, PageMetadata metadata, Widget[] widgets) {
+	public static Page createPage(String code, String parentPageCode, 
+            String groupName, PageModel pageModel, PageMetadata metadata, Widget[] widgets) {
 		Page page = new Page();
 		page.setCode(code);
 		page.setParentCode(parentPageCode);
 		page.setMetadata(metadata);
 		page.setGroup(groupName);
         if (null == widgets) {
-            if (null != metadata && null != metadata.getModel()) {
-                widgets = new Widget[metadata.getModel().getFrames().length];
+            if (null != pageModel) {
+                widgets = new Widget[pageModel.getFrames().length];
             } else {
                 widgets = new Widget[0];
             }
@@ -141,7 +141,7 @@ public class PageTestUtil {
 	public static PageMetadata createPageMetadata(PageModel pageModel, boolean showable, String defaultTitle, String mimeType,
 			String charset, boolean useExtraTitles, Set<String> extraGroups, Date updatedAt) {
 		PageMetadata metadata = new PageMetadata();
-		metadata.setModel(pageModel);
+		metadata.setModelCode(pageModel.getCode());
 
 		metadata.setShowable(showable);
 		metadata.setTitle("it", defaultTitle);
@@ -171,11 +171,10 @@ public class PageTestUtil {
 		return properties;
 	}
 
-	public static Widget createWidget(String widgetCode, ApsProperties config, IWidgetTypeManager widgetTypeManager) {
+	public static Widget createWidget(String widgetCode, ApsProperties config) {
 		Widget widget = new Widget();
 		widget.setConfig(config);
-		WidgetType widgetType = widgetTypeManager.getWidgetType(widgetCode);
-		widget.setType(widgetType);
+		widget.setTypeCode(widgetCode);
 		return widget;
 	}
 
