@@ -70,7 +70,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RestMediaTypes;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -83,9 +82,6 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
     private IPageManager pageManager;
-
-    @Autowired
-    private IWidgetTypeManager widgetTypeManager;
 
     @Autowired
     private IPageModelManager pageModelManager;
@@ -1549,7 +1545,7 @@ class PageControllerIntegrationTest extends AbstractControllerIntegrationTest {
                 .createPageMetadata(pageModel, true, pageCode + "_title", null, null, false, null, null);
         ApsProperties config = new ApsProperties();
         config.put("actionPath", "/mypage.jsp");
-        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config, this.widgetTypeManager);
+        Widget widgetToAdd = PageTestUtil.createWidget("formAction", config);
         if (viewPage) {
             pageModel.setMainFrame(0);
             widgetToAdd.setConfig(null);
