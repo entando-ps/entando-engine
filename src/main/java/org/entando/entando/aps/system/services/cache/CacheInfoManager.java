@@ -140,6 +140,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         return pjp.proceed();
     }
 
+    @Override
     public void setExpirationTime(String targetCache, String key, int expiresInMinute) {
         Date expirationTime = DateUtils.addMinutes(new Date(), expiresInMinute);
         this.setExpirationTime(targetCache, key, expirationTime);
@@ -215,9 +216,9 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         cache.put(key, obj);
     }
 
+    @Override
     public void putInCache(String targetCache, String key, Object obj, String[] groups) {
-        Cache cache = this.getCache(targetCache);
-        cache.put(key, obj);
+        this.putInCache(targetCache, key, obj);
         this.accessOnGroupMapping(targetCache, 1, groups, key);
     }
 
@@ -233,6 +234,9 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     }
 
     protected synchronized void accessOnGroupMapping(String targetCache, int operationId, String[] groups, String key) {
+        if (null == groups) {
+            return;
+        }
         Cache cache = this.getCache(CACHE_INFO_MANAGER_CACHE_NAME);
         Map<String, List<String>> objectsByGroup = this.get(cache, GROUP_CACHE_NAME_PREFIX + targetCache, Map.class);
         boolean updateMapInCache = false;
@@ -322,7 +326,8 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         }
         return this.getSpringCacheManager().getCache(cacheName);
     }
-
+    
+    @Override
     public Object getFromCache(String targetCache, String key) {
         if (isExpired(targetCache, key)) {
             this.flushEntry(targetCache, key);

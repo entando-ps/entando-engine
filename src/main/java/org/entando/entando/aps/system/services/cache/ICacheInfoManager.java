@@ -28,6 +28,12 @@ public interface ICacheInfoManager {
 
 	@Deprecated
 	public static final String CACHE_NAME = DEFAULT_CACHE_NAME;
+    
+    public void putInCache(String targetCache, String key, Object obj, String[] groups);
+    
+    public void setExpirationTime(String targetCache, String key, int expiresInMinute);
+    
+    public Object getFromCache(String targetCache, String key);
 
 	public void flushEntry(String targetCache, String key);
 
