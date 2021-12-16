@@ -41,7 +41,12 @@ public class RequestContext {
 	 * @return Il parametro richiesto
 	 */
 	public Object getExtraParam(String name) {
-		return _extraParams.get(name);
+		if (name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_FRAME) || name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_WIDGET)) {
+            return EntThreadLocal.get(name);
+        } else {
+            return _extraParams.get(name);
+        }
+		
 	}
 
 	/**
@@ -50,7 +55,12 @@ public class RequestContext {
 	 * @param param Il parametro da aggiungere
 	 */
 	public void addExtraParam(String name, Object param) {
-		this._extraParams.put(name, param);
+        if (name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_FRAME) || name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_WIDGET)) {
+            EntThreadLocal.set(name, param);
+        } else {
+            this._extraParams.put(name, param);
+        }
+		
 	}
 
 	/**
@@ -58,7 +68,12 @@ public class RequestContext {
 	 * @param name Il nome del parametro
 	 */
 	public void removeExtraParam(String name) {
-		this._extraParams.remove(name);
+		if (name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_FRAME) || name.equalsIgnoreCase(SystemConstants.EXTRAPAR_CURRENT_WIDGET)) {
+            EntThreadLocal.remove(name);
+        } else {
+            this._extraParams.remove(name);
+        }
+		
 	}
 	
 	/**

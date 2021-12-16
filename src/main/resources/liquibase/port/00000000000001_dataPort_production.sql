@@ -389,7 +389,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 			<@wpsa.tracerFactory var="attributeTracer" lang="%{#lang.code}" />
 				<@s.set var="i18n_attribute_name">userprofile_<@s.property value="userProfile.typeCode" />_<@s.property value="#attribute.name" /></@s.set>
 				<@s.set var="attribute_id">userprofile_<@s.property value="#attribute.name" /></@s.set>
-				<@wp.fragment code="userprofile_is_IteratorAttribute" escapeXml=false />
+				<#include "userprofile_is_IteratorAttribute" >
 		</@s.if>
 	</@s.iterator>
 
@@ -662,11 +662,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-BooleanAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-BooleanAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.if>
@@ -674,11 +674,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-CheckboxAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-CheckboxAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -687,10 +687,10 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 		<fieldset class=" <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 			<legend class="margin-medium-top">
 				<@wp.i18n key="${i18n_attribute_name}" />
-				<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+				<#include "userprofile_is_front_AttributeInfo" >
 			</legend>
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front-CompositeAttribute" escapeXml=false />
+			<#include "userprofile_is_front_attributeInfo-help-block" >
+			<#include "userprofile_is_front-CompositeAttribute" >
 		</fieldset>
 	</div>
 </@s.elseif>
@@ -698,11 +698,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-DateAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-DateAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -710,11 +710,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-EnumeratorAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-EnumeratorAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -722,11 +722,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-EnumeratorMapAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-EnumeratorMapAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -734,11 +734,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-HypertextAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-HypertextAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -747,10 +747,10 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 		<fieldset class=" <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 			<legend class="margin-medium-top">
 				<@wp.i18n key="${i18n_attribute_name}" />
-					<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+					<#include "userprofile_is_front_AttributeInfo" >
 			</legend>
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front-MonolistAttribute" escapeXml=false />
+			<#include "userprofile_is_front_attributeInfo-help-block" >
+			<#include "userprofile_is_front-MonolistAttribute" >
 		</fieldset>
 	</div>
 </@s.elseif>
@@ -758,11 +758,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-LongtextAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-LongtextAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -770,10 +770,10 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="well well-small">
 		<fieldset class=" <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 			<legend class="margin-medium-top"><@wp.i18n key="${i18n_attribute_name}" />
-				<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+				<#include "userprofile_is_front_AttributeInfo" >
 			</legend>
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front-MonolistAttribute" escapeXml=false />
+			<#include "userprofile_is_front_attributeInfo-help-block" >
+			<#include "userprofile_is_front-MonolistAttribute" >
 		</fieldset>
 	</div>
 </@s.elseif>
@@ -781,11 +781,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-MonotextAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-MonotextAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -793,11 +793,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-NumberAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-NumberAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -805,11 +805,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-MonotextAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-MonotextAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -817,11 +817,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="#attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-ThreeStateAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-ThreeStateAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.elseif>
@@ -829,11 +829,11 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<div class="control-group <@s.property value="%{'' attribute-type-''+#attribute.type+'' ''}" />">
 		<label class="control-label" for="<@s.property value="attribute_id" />">
 			<@wp.i18n key="${i18n_attribute_name}" />
-			<@wp.fragment code="userprofile_is_front_AttributeInfo" escapeXml=false />
+			<#include "userprofile_is_front_AttributeInfo" >
 		</label>
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-MonotextAttribute" escapeXml=false />
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front-MonotextAttribute" >
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</div>
 </@s.else>', 1);
@@ -933,56 +933,56 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 				<@s.property value="#elementStatus.count" /><span class="noscreen">&#32;<@s.text name="label.compositeAttribute.element" /></span>
 				&#32;
 				<@s.if test="#lang.default">
-					<@wp.fragment code="userprofile_is_front_AllList_operationModule" escapeXml=false />
+					<#include "userprofile_is_front_AllList_operationModule" >
 				</@s.if>
 			</@s.if>
 			<@s.else>
 				<@s.property value="#elementStatus.count" />
 				&#32;
-				<@wp.fragment code="userprofile_is_front_AllList_operationModule" escapeXml=false />
+				<#include "userprofile_is_front_AllList_operationModule" >
 			</@s.else>
 		</label>
 		<div class="controls">
 			<@s.if test="#attribute.type == ''Boolean''">
-				<@wp.fragment code="userprofile_is_front-BooleanAttribute" escapeXml=false />
+				<#include "userprofile_is_front-BooleanAttribute" >
 			</@s.if>
 			<@s.elseif test="#attribute.type == ''CheckBox''">
-				<@wp.fragment code="userprofile_is_front-CheckboxAttribute" escapeXml=false />
+				<#include "userprofile_is_front-CheckboxAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Composite''">
-				<@wp.fragment code="userprofile_is_front-CompositeAttribute" escapeXml=false />
+				<#include "userprofile_is_front-CompositeAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Date''">
-				<@wp.fragment code="userprofile_is_front-DateAttribute" escapeXml=false />
+				<#include "userprofile_is_front-DateAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Enumerator''">
-				<@wp.fragment code="userprofile_is_front-EnumeratorAttribute" escapeXml=false />
+				<#include "userprofile_is_front-EnumeratorAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''EnumeratorMap''">
-				<@wp.fragment code="userprofile_is_front-EnumeratorMapAttribute" escapeXml=false />
+				<#include "userprofile_is_front-EnumeratorMapAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Hypertext''">
-				<@wp.fragment code="userprofile_is_front-HypertextAttribute" escapeXml=false />
+				<#include "userprofile_is_front-HypertextAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Longtext''">
-				<@wp.fragment code="userprofile_is_front-LongtextAttribute" escapeXml=false />
+				<#include "userprofile_is_front-LongtextAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Monotext''">
-				<@wp.fragment code="userprofile_is_front-MonotextAttribute" escapeXml=false />
+				<#include "userprofile_is_front-MonotextAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Number''">
-				<@wp.fragment code="userprofile_is_front-NumberAttribute" escapeXml=false />
+				<#include "userprofile_is_front-NumberAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''ThreeState''">
-				<@wp.fragment code="userprofile_is_front-ThreeStateAttribute" escapeXml=false />
+				<#include "userprofile_is_front-ThreeStateAttribute" >
 			</@s.elseif>
 			<@s.elseif test="#attribute.type == ''Text''">
-				<@wp.fragment code="userprofile_is_front-MonotextAttribute" escapeXml=false />
+				<#include "userprofile_is_front-MonotextAttribute" >
 			</@s.elseif>
 			<@s.else>
-				<@wp.fragment code="userprofile_is_front-MonotextAttribute" escapeXml=false />
+				<#include "userprofile_is_front-MonotextAttribute" >
 			</@s.else>
-			<@wp.fragment code="userprofile_is_front_attributeInfo-help-block" escapeXml=false />
+			<#include "userprofile_is_front_attributeInfo-help-block" >
 		</div>
 	</li>
 </@s.iterator>
@@ -996,7 +996,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 <@s.if test="#lang.default">
 	<div class="control-group">
 		<div class="controls">
-			<@wp.fragment code="userprofile_is_front-AllList-addElementButton" escapeXml=false />
+			<#include "userprofile_is_front-AllList-addElementButton" >
 		</div>
 	</div>
 </@s.if>', 1);
@@ -1028,7 +1028,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 			<@wpsa.tracerFactory var="attributeTracer" lang="%{#lang.code}" />
 			<@s.set var="i18n_attribute_name">userprofile_<@s.property value="userProfile.typeCode" />_<@s.property value="#attribute.name" /></@s.set>
 			<@s.set var="attribute_id">userprofile_<@s.property value="#attribute.name" /></@s.set>
-			<@wp.fragment code="userprofile_is_IteratorAttribute" escapeXml=false />
+			<#include "userprofile_is_IteratorAttribute" >
 		</@s.if>
 	</@s.iterator>
 	<p class="form-actions">
@@ -1068,7 +1068,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<@s.set var="parentAttribute" value="#masterCompositeAttribute"></@s.set>
 	<@s.set var="i18n_attribute_name">userprofile_ATTR<@s.property value="%{i18n_parent_attribute_name}" /><@s.property value="#attribute.name" /></@s.set>
 	<@s.set var="attribute_id">userprofile_<@s.property value="%{i18n_parent_attribute_name}" /><@s.property value="#attribute.name" />_<@s.property value="#elementIndex" /></@s.set>
-	<@wp.fragment code="userprofile_is_IteratorAttribute" escapeXml=false />
+	<#include "userprofile_is_IteratorAttribute" >
 </@s.iterator>
 <@s.set var="attributeTracer" value="#masterCompositeAttributeTracer" />
 <@s.set var="attribute" value="#masterCompositeAttribute" />
@@ -1263,22 +1263,22 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	<@s.set var="methodVar" value="#GETMethodVar" />
 	<@s.set var="currentMethodNameVar" value="%{''GET''}" />
 	<h3 id="api_method_GET">GET</h3>
-	<@wp.fragment code="entandoapi_is_resource_detail_include" escapeXml=false />
+	<#include "entandoapi_is_resource_detail_include" >
 
 	<@s.set var="methodVar" value="#POSTMethodVar" />
 	<@s.set var="currentMethodNameVar" value="%{''POST''}" />
 	<h3 id="api_method_POST">POST</h3>
-	<@wp.fragment code="entandoapi_is_resource_detail_include" escapeXml=false />
+	<#include "entandoapi_is_resource_detail_include" >
 
 	<@s.set var="methodVar" value="#PUTMethodVar" />
 	<@s.set var="currentMethodNameVar" value="%{''PUT''}" />
 	<h3 id="api_method_PUT">PUT</h3>
-	<@wp.fragment code="entandoapi_is_resource_detail_include" escapeXml=false />
+	<#include "entandoapi_is_resource_detail_include" >
 
 	<@s.set var="methodVar" value="#DELETEMethodVar" />
 	<@s.set var="currentMethodNameVar" value="%{''DELETE''}" />
 	<h3 id="api_method_DELETE">DELETE</h3>
-	<@wp.fragment code="entandoapi_is_resource_detail_include" escapeXml=false />
+	<#include "entandoapi_is_resource_detail_include" >
 <p>
 	<a href="<@wp.action path="/ExtStr2/do/Front/Api/Resource/list.action" />" class="btn btn-primary"><i class="icon-arrow-left icon-white"></i>&#32;<@wp.i18n key="ENTANDO_API_GOTO_LIST" /></a>
 </p>

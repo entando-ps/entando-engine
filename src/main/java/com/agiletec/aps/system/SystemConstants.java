@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2021-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -70,15 +70,7 @@ public interface SystemConstants {
     /**
      * Nome parametro extra per requestContext: widget corrente
      */
-    public static final String EXTRAPAR_CURRENT_WIDGET = "currentShowlet";
-
-    /**
-     * Nome parametro extra per requestContext: showlet corrente
-     *
-     * @deprecated Use {@link #EXTRAPAR_CURRENT_WIDGET} instead
-     */
-    @Deprecated
-    public static final String EXTRAPAR_CURRENT_SHOWLET = EXTRAPAR_CURRENT_WIDGET;
+    public static final String EXTRAPAR_CURRENT_WIDGET = "currentWidget";
 
     /**
      * Nome parametro extra per requestContext: frame corrente
