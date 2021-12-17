@@ -1491,7 +1491,6 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 <p><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#content-viewer-list-filters"><@wp.i18n key="SEARCH_FILTERS_BUTTON" /> <i class="icon-zoom-in icon-white"></i></button></p>
 <form action="<@wp.url />" method="post" class="form-horizontal collapse" id="content-viewer-list-filters">
 	<#list userFilterOptionsVar as userFilterOptionVar>
-		<@wp.freemarkerTemplateParameter var="userFilterOptionVar" valueName="userFilterOptionVar" removeOnEndTag=true >
 		<#if !userFilterOptionVar.attributeFilter && (userFilterOptionVar.key == "fulltext" || userFilterOptionVar.key == "category")>
 			<#include "jacms_content_viewer_list_userfilter_met_${userFilterOptionVar.key}" >
 		</#if>
@@ -1521,7 +1520,6 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 				<#include "jacms_content_viewer_list_userfilter_ent_ThreeSt" >
 			</#if>
 		</#if>
-		</@wp.freemarkerTemplateParameter>
 	</#list>
 	<p class="form-actions">
 		<input type="submit" value="<@wp.i18n key="SEARCH" />" class="btn btn-primary" />
@@ -1583,12 +1581,10 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 <#if (titleVar??)>
 	<h1>${titleVar}</h1>
 </#if>
-<@wp.freemarkerTemplateParameter var="userFilterOptionsVar" valueName="userFilterOptionsVar" removeOnEndTag=true >
 <#include "jacms_content_viewer_list_userfilters" >
-</@wp.freemarkerTemplateParameter>
 <#if (contentList??) && (contentList?has_content) && (contentList?size > 0)>
 	<@wp.pager listName="contentList" objectName="groupContent" pagerIdFromFrame=true advanced=true offset=5>
-		<@wp.freemarkerTemplateParameter var="group" valueName="groupContent" removeOnEndTag=true >
+                <#assign group=groupContent>
 		<#include "default_pagerBlock" >
 <#list contentList as contentId>
 <#if (contentId_index >= groupContent.begin) && (contentId_index <= groupContent.end)>
@@ -1596,7 +1592,6 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 </#if>
 </#list>
 		<#include "default_pagerBlock" >
-		</@wp.freemarkerTemplateParameter>
 	</@wp.pager>
 <#else>
 		<p class="alert alert-info"><@wp.i18n key="LIST_VIEWER_EMPTY" /></p>
@@ -1751,7 +1746,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 <p><@wp.i18n key="SEARCHED_FOR" />: <em><strong><#if (RequestParameters.search??)>${RequestParameters.search}</#if></strong></em></p>
 <#if (contentListResult??) && (contentListResult?has_content) && (contentListResult?size > 0)>
 <@wp.pager listName="contentListResult" objectName="groupContent" max=10 pagerIdFromFrame=true advanced=true offset=5>
-	<@wp.freemarkerTemplateParameter var="group" valueName="groupContent" removeOnEndTag=true >
+	<#assign group=groupContent>
 	<p><em><@wp.i18n key="SEARCH_RESULTS_INTRO" /> <!-- infamous whitespace hack -->
 	${groupContent.size}
 	<@wp.i18n key="SEARCH_RESULTS_OUTRO" /> [${groupContent.begin + 1} &ndash; ${groupContent.end + 1}]:</em></p>
@@ -1762,7 +1757,6 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	</#if>
 	</#list>
 	<#include "default_pagerBlock" >
-	</@wp.freemarkerTemplateParameter>
 </@wp.pager>
 <#else>
 <p class="alert alert-info"><@wp.i18n key="SEARCH_NOTHING_FOUND" /></p>
@@ -1776,7 +1770,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 </#if>
 <#if (contentInfoList??) && (contentInfoList?has_content) && (contentInfoList?size > 0)>
 	<@wp.pager listName="contentInfoList" objectName="groupContent" pagerIdFromFrame=true advanced=true offset=5>
-	<@wp.freemarkerTemplateParameter var="group" valueName="groupContent" removeOnEndTag=true >
+	<#assign group=groupContent>
 	<#include "default_pagerBlock" >
 	<#list contentInfoList as contentInfoVar>
 	<#if (contentInfoVar_index >= groupContent.begin) && (contentInfoVar_index <= groupContent.end)>
@@ -1788,7 +1782,6 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 	</#if>
 	</#list>
 	<#include "default_pagerBlock" >
-	</@wp.freemarkerTemplateParameter>
 	</@wp.pager>
 </#if>
 <#if (pageLinkVar??) && (pageLinkDescriptionVar??)>
@@ -1801,25 +1794,20 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 <@wp.headInfo type="JS" info="entando-misc-bootstrap/bootstrap.min.js" />
 
 <@wp.currentPage param="code" var="currentPageCode" />
-<@wp.freemarkerTemplateParameter var="currentPageCode" valueName="currentPageCode" />
 <ul class="nav">
 <@wp.nav var="page">
 
 <#if (previousPage?? && previousPage.code??)>
 	<#assign previousLevel=previousPage.level>
 	<#assign level=page.level>
-        <@wp.freemarkerTemplateParameter var="level" valueName="level" />
-	<@wp.freemarkerTemplateParameter var="previousLevel" valueName="previousLevel" />
 	<#include "entando-widget-navigation_bar_include" >
 </#if>
-	<@wp.freemarkerTemplateParameter var="previousPage" valueName="page" />
+	<#assign previousPage=page>
 </@wp.nav>
 
 <#if (previousPage??)>
 	<#assign previousLevel=previousPage.level>
         <#assign level=0>
-	<@wp.freemarkerTemplateParameter var="level" valueName="level" />
-	<@wp.freemarkerTemplateParameter var="previousLevel" valueName="previousLevel" />
 	<#include "entando-widget-navigation_bar_include" >
 
         <#if (previousLevel != 0)>
@@ -1831,7 +1819,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 </#if>
 
 </ul>
-<@wp.freemarkerTemplateParameter var="previousPage" valueName="" removeOnEndTag=true />', 1);
+<#assign previousPage="">', 1);
 INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, locked) VALUES ('entando-widget-navigation_bar_include', NULL, NULL, NULL, '<#assign wp=JspTaglibs["/aps-core"]>
 <#assign c=JspTaglibs["http://java.sun.com/jsp/jstl/core"]>
 
@@ -1909,7 +1897,7 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
   <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<@wp.i18n key="ESLC_LANGUAGE" />"><span class="icon-flag"></span><span class="caret"></span></a>
       <ul class="dropdown-menu">
-		<@wp.freemarkerTemplateParameter var="langsListVar" valueName="langsVar" removeOnEndTag=true >
+                <#assign langsListVar=langsVar>
 		<#list langsListVar as curLangVar>
 		<li <#if (curLangVar.code == currentLangVar)>class="active" </#if>>
 			<a href="<@wp.url lang="${curLangVar.code}" paramRepeat=true />">
@@ -1917,7 +1905,6 @@ INSERT INTO guifragment (code, widgettypecode, plugincode, gui, defaultgui, lock
 			</a>
 		</li>
 		</#list>
-		</@wp.freemarkerTemplateParameter>
       </ul>
   </li>
 </ul>', 1);
