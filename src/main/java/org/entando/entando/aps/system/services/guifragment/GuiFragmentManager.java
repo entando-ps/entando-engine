@@ -208,12 +208,12 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     public List getGuiFragmentUtilizers(String guiFragmentCode) throws EntException {
         List<GuiFragment> utilizers = new ArrayList<GuiFragment>();
         try {
-            String strToSearch = "code=\"" + guiFragmentCode + "\"";
+            String strToSearch = "\"" + guiFragmentCode + "\"";
             Set<String> results = new HashSet<>();
             results.addAll(this.searchFragments(strToSearch, "gui"));
             results.addAll(this.searchFragments(strToSearch, "defaultgui"));
             if (!results.isEmpty()) {
-                Pattern pattern = Pattern.compile("<@wp\\.fragment.*code=\"" + guiFragmentCode + "\".*/>", Pattern.MULTILINE);
+                Pattern pattern = Pattern.compile("<#include \"" + guiFragmentCode + "\".*>", Pattern.MULTILINE);
                 Iterator<String> it = results.iterator();
                 while (it.hasNext()) {
                     String fcode = it.next();
@@ -242,7 +242,7 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     protected Set<String> searchFragments(String strToSearch, String column) throws EntException {
-        FieldSearchFilter filterTag = new FieldSearchFilter(column, "<@wp.fragment", true);
+        FieldSearchFilter filterTag = new FieldSearchFilter(column, "<#include", true);
         FieldSearchFilter[] filters1 = new FieldSearchFilter[]{filterTag};
         List<String> result1 = this.searchGuiFragments(filters1);
         FieldSearchFilter filterCode = new FieldSearchFilter(column, strToSearch, true);

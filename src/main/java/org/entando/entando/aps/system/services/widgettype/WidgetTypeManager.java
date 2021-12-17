@@ -32,6 +32,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -81,8 +82,7 @@ public class WidgetTypeManager extends AbstractService
     public List<WidgetType> getWidgetTypes() {
         List<WidgetType> types = new ArrayList<>();
         types.addAll(this.getCacheWrapper().getWidgetTypes());
-        BeanComparator comparator = new BeanComparator("code");
-        Collections.sort(types, comparator);
+        types.sort(Comparator.comparing(WidgetType::getCode));
         return types;
     }
 
