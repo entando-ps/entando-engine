@@ -232,7 +232,7 @@
 	
 	<tag>
 		<description>
-			<![CDATA[Print a gui fragment by the given code.]]>
+			<![CDATA[<strong>DEPRECATED</strong>; remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive.<br />Print a gui fragment by the given code.]]>
 		</description>
 		<name>fragment</name>
 		<tag-class>org.entando.entando.aps.tags.GuiFragmentTag</tag-class>
@@ -260,7 +260,7 @@
 	</tag>
 	
 	<tag>
-		<description><![CDATA[Add a parameter into the Freemarker's TemplateModel Map.]]></description>
+		<description><![CDATA[<strong>DEPRECATED</strong>; remove it from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive.<br />Add a parameter into the Freemarker's TemplateModel Map.]]></description>
 		<name>freemarkerTemplateParameter</name>
 		<tag-class>org.entando.entando.aps.tags.FreemarkerTemplateParameterTag</tag-class>
 		<body-content>JSP</body-content>

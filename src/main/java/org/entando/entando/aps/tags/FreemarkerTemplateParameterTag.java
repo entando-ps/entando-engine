@@ -24,6 +24,7 @@ import freemarker.core.Environment;
 import freemarker.ext.beans.StringModel;
 import freemarker.ext.servlet.AllHttpScopesHashModel;
 import freemarker.template.TemplateModel;
+import org.apache.commons.lang3.StringUtils;
 
 import org.entando.entando.aps.system.services.controller.executor.ExecutorBeanContainer;
 
@@ -33,6 +34,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 /**
  * Add a parameter into the Freemarker's TemplateModel Map
  * @author E.Santoboni
+ * @deprecated remove it from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive
  */
 public class FreemarkerTemplateParameterTag extends TagSupport {
 	
@@ -40,6 +42,12 @@ public class FreemarkerTemplateParameterTag extends TagSupport {
 	
 	@Override
     public int doStartTag() throws JspException {
+        String parallelWidgetEnv = System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM);
+        boolean parallel = (!StringUtils.isBlank(parallelWidgetEnv)) ? Boolean.valueOf(parallelWidgetEnv) : false;
+        if (parallel) {
+            _logger.warn("** TAG FreemarkerTemplateParameterTag DEPRECATED ** - "
+                + "remove it from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
+        }
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {
