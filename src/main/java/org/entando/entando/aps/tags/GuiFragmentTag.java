@@ -39,6 +39,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 /**
  * Print a gui fragment output by the given code.
  * @author E.Santoboni
+ * @deprecated remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive
  */
 public class GuiFragmentTag extends ExtendedTagSupport {
 	
@@ -46,6 +47,12 @@ public class GuiFragmentTag extends ExtendedTagSupport {
 	
 	@Override
     public int doStartTag() throws JspException {
+        String parallelWidgetEnv = System.getenv(SystemConstants.PARALLEL_WIDGET_RENDER_ENV_PARAM);
+        boolean parallel = (!StringUtils.isBlank(parallelWidgetEnv)) ? Boolean.valueOf(parallelWidgetEnv) : false;
+        if (parallel) {
+            _logger.warn("** TAG GuiFragmentTag DEPRECATED ** - "
+                + "remove FreemarkerTemplateParameterTag from every freemarker template (page template and fragments) and substitute @wp.fragments with #include directive");
+        }
 		ServletRequest request = this.pageContext.getRequest();
 		RequestContext reqCtx = (RequestContext) request.getAttribute(RequestContext.REQCTX);
 		try {
