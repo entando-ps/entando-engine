@@ -70,15 +70,7 @@ public interface SystemConstants {
     /**
      * Nome parametro extra per requestContext: widget corrente
      */
-    public static final String EXTRAPAR_CURRENT_WIDGET = "currentShowlet";
-
-    /**
-     * Nome parametro extra per requestContext: showlet corrente
-     *
-     * @deprecated Use {@link #EXTRAPAR_CURRENT_WIDGET} instead
-     */
-    @Deprecated
-    public static final String EXTRAPAR_CURRENT_SHOWLET = EXTRAPAR_CURRENT_WIDGET;
+    public static final String EXTRAPAR_CURRENT_WIDGET = "currentWidget";
 
     /**
      * Nome parametro extra per requestContext: frame corrente
@@ -477,6 +469,8 @@ public interface SystemConstants {
     public static final String ORIGIN = "Origin";
     public static final String REFERER = "Referer";
     public static final String CSRF_BASIC_PROTECTION = "basic";
+    
+    public static final String PARALLEL_WIDGET_RENDER_ENV_PARAM = "PARALLEL_WIDGET_RENDER";
 
     // keycloak
     public static final String SYSTEM_PROP_KEYCLOAK_AUTH_URL = "keycloak.auth.url";
