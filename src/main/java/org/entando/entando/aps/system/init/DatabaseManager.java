@@ -43,6 +43,7 @@ import liquibase.changelog.ChangeSetStatus;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.io.output.StringBuilderWriter;
@@ -50,7 +51,6 @@ import org.entando.entando.aps.system.init.IInitializerManager.DatabaseMigration
 import org.entando.entando.aps.system.init.exception.DatabaseMigrationException;
 import org.entando.entando.aps.system.init.model.Component;
 import org.entando.entando.aps.system.init.model.ComponentInstallationReport;
-import org.entando.entando.aps.system.init.model.DataInstallationReport;
 import org.entando.entando.aps.system.init.model.DataSourceDumpReport;
 import org.entando.entando.aps.system.init.model.LiquibaseInstallationReport;
 import org.entando.entando.aps.system.init.model.SystemInstallationReport;
@@ -140,10 +140,6 @@ public class DatabaseManager extends AbstractInitializerManager
                 } else {
                     this.restoreDefaultDump();
                 }
-            } else {
-                for (Component entandoComponentConfiguration : components) {
-                    this.initComponentDefaultResources(entandoComponentConfiguration, report, migrationStrategy);
-                }
             }
         } catch (DatabaseMigrationException de) {
             throw de;
@@ -207,38 +203,6 @@ public class DatabaseManager extends AbstractInitializerManager
 
     //---------------- DATA ------------------- START
 
-    public void initComponentDefaultResources(Component componentConfiguration, SystemInstallationReport report,
-            DatabaseMigrationStrategy migrationStrategy) throws EntException {
-        logger.info(INIT_MSG_P, componentConfiguration.getCode(), LOG_PREFIX);
-        ComponentInstallationReport componentReport = report.getComponentReport(componentConfiguration.getCode(),
-                false);
-        if (componentReport.getStatus().equals(Status.OK)) {
-            logger.debug(LOG_PREFIX + "( ok )  Already installed\n" + LOG_PREFIX);
-            ApsSystemUtils.directStdoutTrace(LOG_PREFIX + "( ok )  Already installed\n" + LOG_PREFIX);
-            return;
-        }
-        DataInstallationReport dataReport = componentReport.getDataReport();
-        try {
-            ApsSystemUtils.directStdoutTrace(LOG_PREFIX + "Starting installation\n" + LOG_PREFIX);
-            String[] dataSourceNames = this.extractBeanNames(DataSource.class);
-            for (String dataSourceName : dataSourceNames) {
-                ApsSystemUtils.directStdoutTrace("|   ( ok )  " + dataSourceName);
-                if ((report.getStatus().equals(Status.PORTING)
-                        || report.getStatus().equals(Status.RESTORE)) && DatabaseMigrationStrategy.AUTO.equals(
-                        migrationStrategy)) {
-                    dataReport.getDatabaseStatus().put(dataSourceName, report.getStatus());
-                } else {
-                    dataReport.getDatabaseStatus().put(dataSourceName, Status.NOT_AVAILABLE);
-                }
-            }
-            ApsSystemUtils.directStdoutTrace(LOG_PREFIX + "\n" + LOG_PREFIX + "Installation complete\n" + LOG_PREFIX);
-            logger.debug(LOG_PREFIX + "\n" + LOG_PREFIX + "Installation complete\n" + LOG_PREFIX);
-        } catch (Throwable t) {
-            logger.error("Error restoring resources of component {}", componentConfiguration.getCode(), t);
-            throw new EntException("Error restoring resources of component " + componentConfiguration.getCode(), t);
-        }
-    }
-
     public List<ChangeSetStatus> initLiquiBaseResources(Component componentConfiguration, SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws EntException {
         List<ChangeSetStatus> pendingChangeSet = new ArrayList<>();
         logger.info(INIT_MSG_L, componentConfiguration.getCode(), LOG_PREFIX);
@@ -261,6 +225,9 @@ public class DatabaseManager extends AbstractInitializerManager
                         liquibaseReport.getDatabaseStatus().put(dataSourceName, Status.SKIPPED);
                     }
                 }
+            }
+            if (report.getStatus().equals(SystemInstallationReport.Status.RESTORE) || report.getStatus().equals(SystemInstallationReport.Status.PORTING)) {
+                componentReport.setPostProcessStatus(report.getStatus());
             }
             ApsSystemUtils.directStdoutTrace(LOG_PREFIX + "\n" + LOG_PREFIX + "Installation complete\n" + LOG_PREFIX);
             logger.debug(LOG_PREFIX + "\n" + LOG_PREFIX + "Installation complete\n" + LOG_PREFIX);
@@ -318,7 +285,12 @@ public class DatabaseManager extends AbstractInitializerManager
                 writer.close();
             }
             if (null != liquibase) {
-                liquibase.close();
+                try {
+                    liquibase.close();
+                } catch (DatabaseException ex) {
+                    // An error happens when Liquibase closes Derby inside Wildfly. The application can proceed.
+                    logger.error("Error while closing Liquibase connection", ex);
+                }
             }
             if (null != connection) {
                 connection.close();
@@ -340,7 +312,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 String script = this.readFile(resource);
                 if (null != script && script.trim().length() > 0) {
                     this.getDatabaseRestorer().initOracleSchema(dataSource);
-                    TableDataUtils.valueDatabase(script, dataSourceName, dataSource, null);
+                    TableDataUtils.valueDatabase(script, dataSourceName, dataSource);
                 }
             }
         } catch (Throwable t) {
