@@ -37,6 +37,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -615,10 +616,12 @@ public abstract class AbstractAttribute implements AttributeInterface, Serializa
         this._attributeManagerClassName = attributeManagerClassName;
     }
 
+    @Deprecated
     protected ILangManager getLangManager() {
         return _langManager;
     }
 
+    @Deprecated
     public void setLangManager(ILangManager langManager) {
         this._langManager = langManager;
     }
