@@ -184,6 +184,12 @@ public class MonoListAttribute extends AbstractListAttribute {
     }
 
     @Override
+    @Deprecated
+    public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager) {
+        return this.validate(tracer, langManager, null);
+    }
+
+    @Override
     public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager, BeanFactory beanFactory) {
         List<AttributeFieldError> errors = super.validate(tracer, langManager, beanFactory);
         try {

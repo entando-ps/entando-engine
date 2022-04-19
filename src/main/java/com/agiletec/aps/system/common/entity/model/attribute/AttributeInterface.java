@@ -322,8 +322,6 @@ public interface AttributeInterface extends Serializable {
 
     @Deprecated
     public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager);
-    
-    public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager, BeanFactory beanFactory);
 
     public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager, BeanFactory beanFactory);
 
