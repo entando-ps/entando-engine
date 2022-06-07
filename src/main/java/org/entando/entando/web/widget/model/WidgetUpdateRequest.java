@@ -20,6 +20,9 @@ import java.util.Map;
 
 public class WidgetUpdateRequest {
 
+    @NotBlank(message = "widgettype.code.notBlank")
+    private String code;
+
     @NotEmpty(message = "widgettype.titles.notBlank")
     private Map<String, String> titles;
 
@@ -41,6 +44,14 @@ public class WidgetUpdateRequest {
     private String widgetCategory;
 
     private String icon;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public Map<String, String> getTitles() {
         return titles;
