@@ -62,6 +62,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         logger.debug("{} (cache info service initialized) ready", this.getClass().getName());
     }
 
+    @Deprecated
     @Around("@annotation(cacheableInfo)")
     public Object aroundCacheableMethod(ProceedingJoinPoint pjp, CacheableInfo cacheableInfo) throws Throwable {
         boolean skipCacheableInfo = (cacheableInfo.expiresInMinute() < 0 && (StringUtils.isBlank(cacheableInfo.groups())));
@@ -116,6 +117,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         return result;
     }
 
+    @Deprecated
     @Around("@annotation(cacheInfoEvict)")
     public Object aroundCacheInfoEvictMethod(ProceedingJoinPoint pjp, CacheInfoEvict cacheInfoEvict) throws Throwable {
         try {
@@ -273,6 +275,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         }
     }
 
+    @Deprecated
     protected Object evaluateExpression(String expression, Method method, Object[] args, Object target, Class<?> targetClass) {
         Collection<Cache> caches = this.getCaches();
         ExpressionEvaluator evaluator = new ExpressionEvaluator();
@@ -282,7 +285,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
     }
 
     protected Collection<Cache> getCaches() {
-        Collection<Cache> caches = new ArrayList<Cache>();
+        Collection<Cache> caches = new ArrayList<>();
         Iterator<String> iter = this.getSpringCacheManager().getCacheNames().iterator();
         while (iter.hasNext()) {
             String cacheName = iter.next();
