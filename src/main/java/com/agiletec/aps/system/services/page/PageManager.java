@@ -22,6 +22,7 @@ import com.agiletec.aps.system.services.lang.events.LangsChangedEvent;
 import com.agiletec.aps.system.services.lang.events.LangsChangedObserver;
 import com.agiletec.aps.system.services.page.cache.IPageManagerCacheWrapper;
 import com.agiletec.aps.system.services.page.events.PageChangedEvent;
+import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.system.services.pagemodel.PageModelUtilizer;
 import com.agiletec.aps.system.services.pagemodel.events.PageModelChangedEvent;
@@ -32,8 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import com.agiletec.aps.system.common.AbstractParameterizableService;
-import com.agiletec.aps.system.services.pagemodel.IPageModelManager;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
@@ -50,10 +49,6 @@ public class PageManager extends AbstractService implements IPageManager, GroupU
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(PageManager.class);
     public static final String ERRMSG_ERROR_WHILE_MOVING_A_PAGE = "Error while moving a page";
-
-    @Autowired
-    @Qualifier(value = "PageManagerParameterNames")
-    public transient List<String> parameterNames;
 
     private transient IPageManagerCacheWrapper cacheWrapper;
     private transient IPageModelManager pageModelManager;
@@ -760,13 +755,13 @@ public class PageManager extends AbstractService implements IPageManager, GroupU
     }
 
     protected IPageManagerCacheWrapper getCacheWrapper() {
-        return _cacheWrapper;
+        return cacheWrapper;
     }
 
     public void setCacheWrapper(IPageManagerCacheWrapper cacheWrapper) {
-        this._cacheWrapper = cacheWrapper;
+        this.cacheWrapper = cacheWrapper;
     }
-    
+
     protected IPageModelManager getPageModelManager() {
         return pageModelManager;
     }
@@ -775,11 +770,11 @@ public class PageManager extends AbstractService implements IPageManager, GroupU
     }
 
     protected IPageDAO getPageDAO() {
-        return _pageDao;
+        return pageDao;
     }
 
     public void setPageDAO(IPageDAO pageDao) {
-        this._pageDao = pageDao;
+        this.pageDao = pageDao;
     }
 
 }

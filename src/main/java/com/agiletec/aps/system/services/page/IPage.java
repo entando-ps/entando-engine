@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import com.agiletec.aps.system.common.tree.ITreeNode;
-import com.agiletec.aps.system.services.pagemodel.PageModel;
 import com.agiletec.aps.util.ApsProperties;
 
 /**
