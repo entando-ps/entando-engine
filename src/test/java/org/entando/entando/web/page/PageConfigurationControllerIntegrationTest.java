@@ -40,7 +40,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.agiletec.aps.system.services.page.IPage;
+import com.agiletec.aps.system.services.page.Widget;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 
 class PageConfigurationControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
@@ -191,6 +197,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
         }
     }
 
+    @Disabled("disabled for 6.5.0-MT")
     @Test
     void testAddWidgetParallel_1() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -248,6 +255,7 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
         }
     }
     
+    @Disabled("disabled for 6.5.0-MT")
     @Test
     void testAddWidgetParallel_2() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -356,19 +364,34 @@ class PageConfigurationControllerIntegrationTest extends AbstractControllerInteg
         result.andExpect(expected);
         return result;
     }
+    
+    private ResultActions executePutPageFrameWidget(String pageCode,
+            WidgetConfigurationRequest widgetConfigurationRequest, String accessToken, ResultMatcher expected)
+            throws Exception {
+        return this.executePutPageFrameWidget(pageCode, 0, widgetConfigurationRequest, accessToken, expected);
+    }
 
-   private ResultActions executePutPageFrameWidget(String pageCode,
-           WidgetConfigurationRequest widgetConfigurationRequest, String accessToken, ResultMatcher expected)
+    private ResultActions executePutPageFrameWidget(String pageCode, int frame,
+            WidgetConfigurationRequest widgetConfigurationRequest, String accessToken, ResultMatcher expected)
             throws Exception {
         ResultActions result = mockMvc
-                .perform(put("/pages/{pageCode}/widgets/{frameId}", pageCode, 0)
-                                .content(mapper.writeValueAsString(widgetConfigurationRequest))
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken));
+                .perform(put("/pages/{pageCode}/widgets/{frameId}", pageCode, frame)
+                        .content(mapper.writeValueAsString(widgetConfigurationRequest))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken));
         result.andExpect(expected);
         return result;
     }
-
+    
+    private ResultActions executeDeletePageFrameWidget(String pageCode, int frame, 
+            String accessToken, ResultMatcher expected) throws Exception {
+        ResultActions result = mockMvc
+                .perform(delete("/pages/{pageCode}/widgets/{frameId}", pageCode, frame)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken));
+        result.andExpect(expected);
+        return result;
+    }
+    
     private ResultActions executeGetPageFrameWidget(String pageCode, String accessToken,
             ResultMatcher expected)
             throws Exception {
