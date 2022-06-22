@@ -45,6 +45,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @since 3.1
  */
+@Deprecated
 class ExpressionEvaluator {
 
 	public static final Object NO_RESULT = new Object();
