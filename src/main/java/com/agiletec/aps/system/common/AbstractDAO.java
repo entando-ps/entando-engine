@@ -25,8 +25,11 @@ import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.EntThreadLocal;
 import org.entando.entando.ent.exception.EntException;
 import java.sql.PreparedStatement;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Classe contenente alcuni metodi di utilita per i DAO.
@@ -35,6 +38,9 @@ import java.sql.PreparedStatement;
 public abstract class AbstractDAO implements Serializable {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractDAO.class);
+    
+    private DataSource _dataSource;
+    private ITenantManager tenantManager;
 	
 	/**
 	 * Traccia un'eccezione e rilancia una eccezione runtime 
@@ -58,7 +64,14 @@ public abstract class AbstractDAO implements Serializable {
 	protected Connection getConnection() throws EntException {
 		Connection conn = null;
 		try {
-			conn = this.getDataSource().getConnection();
+			DataSource dataSource = null;
+            String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+            if (null != tenantCode) {
+                dataSource = this.getTenantManager().getDatasource(tenantCode);
+            } else {
+                dataSource = this.getDataSource();
+            }
+			conn = dataSource.getConnection();
 		} catch (SQLException e) {
 			_logger.error("Error getting connection to the datasource", e);
 			throw new EntException("Error getting connection to the datasource", e);
@@ -166,15 +179,16 @@ public abstract class AbstractDAO implements Serializable {
 	protected DataSource getDataSource() {
 		return this._dataSource;
 	}
-
-	/**
-	 * Setta il datasource relativo al db gestito dalla classe dao.
-	 * @param dataSource Il datasorce da settare.
-	 */
 	public void setDataSource(DataSource dataSource) {
 		this._dataSource = dataSource;
 	}
-
-	private DataSource _dataSource;
-
+    
+    protected ITenantManager getTenantManager() {
+        return tenantManager;
+    }
+    @Autowired
+    public void setTenantManager(ITenantManager tenantManager) {
+        this.tenantManager = tenantManager;
+    }
+    
 }
