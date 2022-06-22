@@ -16,11 +16,11 @@ package com.agiletec.aps.system;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReqCtxThreadLocal {
+public class EntThreadLocal {
     
     private static final ThreadLocal<Map<String, Object>> sessionThreadLocal = new ThreadLocal<Map<String, Object>>();
     
-    private ReqCtxThreadLocal() {
+    private EntThreadLocal() {
         throw new IllegalStateException("ReqCtxThreadLocal is an Utility class");
     }
     

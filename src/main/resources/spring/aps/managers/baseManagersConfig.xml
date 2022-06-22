@@ -43,6 +43,7 @@
     <bean name="initializerCache" class="java.util.concurrent.ConcurrentHashMap"/>
     <bean name="apiCatalogCache" class="java.util.concurrent.ConcurrentHashMap"/>
     <bean name="keyGeneratorCache" class="java.util.concurrent.ConcurrentHashMap"/>
+    <bean name="tenantCache" class="java.util.concurrent.ConcurrentHashMap"/>
     
     <!-- SPRING OBJECT -->
     <bean id="springCacheManager" class="org.entando.entando.aps.system.services.cache.EntandoCacheManager">
@@ -78,6 +79,8 @@
                       p:name="Entando_ApiCatalogManager" p:store-ref="apiCatalogCache" />
                 <bean class="org.entando.entando.aps.system.services.cache.CustomConcurrentMapCacheFactoryBean"
                       p:name="Entando_KeyGeneratorManager" p:store-ref="keyGeneratorCache" />
+                <bean class="org.entando.entando.aps.system.services.cache.CustomConcurrentMapCacheFactoryBean"
+                      p:name="Entando_TenantManager" p:store-ref="tenantCache" />
             </set>
         </property>
     </bean>
@@ -363,8 +366,7 @@
             <value>10</value>
         </property>
     </bean>
-
-
+    
     <bean id="SocialActivityStreamManager" class="org.entando.entando.aps.system.services.activitystream.SocialActivityStreamManager" 
           parent="abstractService" >
         <property name="keyGeneratorManager" ref="KeyGeneratorManager" />
@@ -384,6 +386,12 @@
     <bean id="UserPreferencesManager"
             class="org.entando.entando.aps.system.services.userpreferences.UserPreferencesManager">
         <property name="userPreferencesDAO" ref="UserPreferencesDAO" />
+    </bean>
+
+    <bean id="TenantManager" class="org.entando.entando.ent.services.tenant.TenantManager" parent="abstractService" >
+        <property name="cacheWrapper">
+            <bean class="org.entando.entando.ent.services.tenant.cache.TenantCacheWrapper" />
+        </property>
     </bean>
     
 </beans>
