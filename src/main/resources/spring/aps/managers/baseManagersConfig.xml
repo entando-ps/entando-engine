@@ -388,9 +388,9 @@
         <property name="userPreferencesDAO" ref="UserPreferencesDAO" />
     </bean>
 
-    <bean id="TenantManager" class="org.entando.entando.ent.services.tenant.TenantManager" parent="abstractService" >
+    <bean id="TenantManager" class="org.entando.entando.aps.system.services.tenant.TenantManager" parent="abstractService" >
         <property name="cacheWrapper">
-            <bean class="org.entando.entando.ent.services.tenant.cache.TenantCacheWrapper" />
+            <bean class="org.entando.entando.aps.system.services.tenant.cache.TenantManagerCacheWrapper" />
         </property>
     </bean>
     

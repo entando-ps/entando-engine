@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.ent.services.tenant;
+package org.entando.entando.aps.system.services.tenant;
 
 import com.agiletec.aps.system.common.AbstractService;
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.entando.entando.ent.services.tenant.cache.ITenantManagerCacheWrapper;
+import org.entando.entando.aps.system.services.tenant.cache.ITenantManagerCacheWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

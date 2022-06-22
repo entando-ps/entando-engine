@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.ent.services.tenant;
+package org.entando.entando.aps.system.services.tenant;
 
 import java.io.Serializable;
 

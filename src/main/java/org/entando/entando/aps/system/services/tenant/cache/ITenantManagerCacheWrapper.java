@@ -11,12 +11,12 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.ent.services.tenant.cache;
+package org.entando.entando.aps.system.services.tenant.cache;
 
 import com.agiletec.aps.system.common.ICacheWrapper;
 import java.util.List;
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.ent.services.tenant.TenantConfig;
+import org.entando.entando.aps.system.services.tenant.TenantConfig;
 
 /**
  * @author E.Santoboni

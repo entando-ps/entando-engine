@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package org.entando.entando.ent.services.tenant.cache;
+package org.entando.entando.aps.system.services.tenant.cache;
 
 import com.agiletec.aps.system.common.AbstractGenericCacheWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.ent.services.tenant.TenantConfig;
+import org.entando.entando.aps.system.services.tenant.TenantConfig;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.annotation.Autowired;
