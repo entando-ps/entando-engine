@@ -28,7 +28,7 @@ import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.EntThreadLocal;
 import org.entando.entando.ent.exception.EntException;
 import java.sql.PreparedStatement;
-import org.entando.entando.aps.system.services.tenant.ITenantManager;
+import org.entando.entando.ent.services.tenant.ITenantManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

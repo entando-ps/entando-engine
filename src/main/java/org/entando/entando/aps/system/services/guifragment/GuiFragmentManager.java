@@ -28,6 +28,7 @@ import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.guifragment.event.GuiFragmentChangedEvent;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
@@ -45,6 +46,8 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     private static final String CODES_BY_TYPE_CACHE_GROUP = "GuiFragment_codesByWidgetTypeGroup";
 
     private IGuiFragmentDAO guiFragmentDAO;
+    
+    private ICacheInfoManager cacheInfoManager;
 
     @Autowired
     @Qualifier(value = "GuiFragmentManagerParameterNames")
