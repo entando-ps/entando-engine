@@ -265,7 +265,7 @@ public abstract class AbstractSearcherDAO extends AbstractDAO {
     protected void appendLimitQueryBlock(FieldSearchFilter[] filters, StringBuffer query) {
         try {
             if (null == filters || filters.length == 0) {
-                logger.warn("no filters");
+                logger.debug("no filters");
                 return;
             }
             for (FieldSearchFilter filter : filters) {
