@@ -412,7 +412,7 @@ class WidgetControllerIntegrationTest extends AbstractControllerIntegrationTest 
                     .andExpect(jsonPath("$.payload.code", is(childCode)))
                     .andExpect(jsonPath("$.payload.parentType", is(parentCode)))
                     .andExpect(jsonPath("$.payload.guiFragments.size()", is(1)))
-                    .andExpect(jsonPath("$.payload.guiFragments[0].customUi", is(parentCustomUi)))
+                    .andExpect(jsonPath("$.payload.guiFragments[0].customUi", nullValue())) // updated for MT
                     .andExpect(jsonPath("$.payload.parameters.size()", is(0)))
                     .andExpect(jsonPath("$.payload.hasConfig", is(false)))
                     .andExpect(jsonPath("$.payload.config.parentCode", is("configValue")));
