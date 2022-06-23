@@ -16,8 +16,6 @@ package org.entando.entando.aps.system.services.guifragment;
 import com.agiletec.aps.system.common.AbstractParameterizableService;
 import com.agiletec.aps.system.common.FieldSearchFilter;
 import com.agiletec.aps.system.common.model.dao.SearcherDaoPaginatedResult;
-import org.entando.entando.ent.exception.EntException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,13 +23,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.aps.system.services.cache.CacheInfoEvict;
-import org.entando.entando.aps.system.services.cache.CacheableInfo;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.guifragment.event.GuiFragmentChangedEvent;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,6 +39,10 @@ import org.springframework.cache.annotation.Cacheable;
 public class GuiFragmentManager extends AbstractParameterizableService implements IGuiFragmentManager, GuiFragmentUtilizer {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(GuiFragmentManager.class);
+
+    private static final String UNIQUE_BY_TYPE_CACHE_GROUP = "GuiFragment_uniqueByWidgetTypeGroup";
+
+    private static final String CODES_BY_TYPE_CACHE_GROUP = "GuiFragment_codesByWidgetTypeGroup";
 
     private IGuiFragmentDAO guiFragmentDAO;
 
@@ -122,11 +121,11 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_'.concat(#guiFragment.code)")
-    @CacheInfoEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, groups = "'GuiFragment_uniqueByWidgetTypeGroup,GuiFragment_codesByWidgetTypeGroup'")//TODO improve group handling
     public void addGuiFragment(GuiFragment guiFragment) throws EntException {
         try {
             this.getGuiFragmentDAO().insertGuiFragment(guiFragment);
             this.notifyGuiFragmentChangedEvent(guiFragment, GuiFragmentChangedEvent.INSERT_OPERATION_CODE);
+            this.evictGroups();
         } catch (Throwable t) {
             logger.error("Error adding GuiFragment", t);
             throw new EntException("Error adding GuiFragment", t);
@@ -135,11 +134,11 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_'.concat(#guiFragment.code)")
-    @CacheInfoEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, groups = "'GuiFragment_uniqueByWidgetTypeGroup,GuiFragment_codesByWidgetTypeGroup'")//TODO improve group handling
     public void updateGuiFragment(GuiFragment guiFragment) throws EntException {
         try {
             this.getGuiFragmentDAO().updateGuiFragment(guiFragment);
             this.notifyGuiFragmentChangedEvent(guiFragment, GuiFragmentChangedEvent.UPDATE_OPERATION_CODE);
+            this.evictGroups();
         } catch (Throwable t) {
             logger.error("Error updating GuiFragment", t);
             throw new EntException("Error updating GuiFragment " + guiFragment, t);
@@ -148,16 +147,21 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     @CacheEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_'.concat(#code)")
-    @CacheInfoEvict(value = ICacheInfoManager.DEFAULT_CACHE_NAME, groups = "'GuiFragment_uniqueByWidgetTypeGroup,GuiFragment_codesByWidgetTypeGroup'")//TODO improve group handling
     public void deleteGuiFragment(String code) throws EntException {
         try {
             GuiFragment guiFragment = this.getGuiFragment(code);
             this.getGuiFragmentDAO().removeGuiFragment(code);
             this.notifyGuiFragmentChangedEvent(guiFragment, GuiFragmentChangedEvent.REMOVE_OPERATION_CODE);
+            this.evictGroups();
         } catch (Throwable t) {
             logger.error("Error deleting GuiFragment with code {}", code, t);
             throw new EntException("Error deleting GuiFragment with code:" + code, t);
         }
+    }
+
+    private void evictGroups() {
+        this.getCacheInfoManager().flushGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, UNIQUE_BY_TYPE_CACHE_GROUP);
+        this.getCacheInfoManager().flushGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, CODES_BY_TYPE_CACHE_GROUP);
     }
 
     private void notifyGuiFragmentChangedEvent(GuiFragment guiFragment, int operationCode) {
@@ -169,7 +173,6 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_uniqueByWidgetType_'.concat(#widgetTypeCode)")
-    @CacheableInfo(groups = "'GuiFragment_uniqueByWidgetTypeGroup'")//TODO improve group handling
     public GuiFragment getUniqueGuiFragmentByWidgetType(String widgetTypeCode) throws EntException {
         GuiFragment guiFragment = null;
         try {
@@ -179,6 +182,8 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
                     logger.warn("There are more then one fragment joined with widget '{}'", widgetTypeCode);
                 }
                 guiFragment = this.getGuiFragment(fragmentCodes.get(0));
+                String cacheKey = "GuiFragment_uniqueByWidgetType_" + widgetTypeCode;
+                this.getCacheInfoManager().putInGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, new String[]{UNIQUE_BY_TYPE_CACHE_GROUP});
             }
         } catch (Throwable t) {
             logger.error("Error loading guiFragment by widget '{}'", widgetTypeCode, t);
@@ -189,7 +194,6 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_codesByWidgetType_'.concat(#widgetTypeCode)")
-    @CacheableInfo(groups = "'GuiFragment_codesByWidgetTypeGroup'")//TODO improve group handling
     public List<String> getGuiFragmentCodesByWidgetType(String widgetTypeCode) throws EntException {
         List<String> codes = null;
         try {
@@ -197,6 +201,8 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
             filter.setOrder(FieldSearchFilter.Order.ASC);
             FieldSearchFilter[] filters = {filter};
             codes = this.searchGuiFragments(filters);
+            String cacheKey = "GuiFragment_codesByWidgetType_" + widgetTypeCode;
+            this.getCacheInfoManager().putInGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, new String[]{CODES_BY_TYPE_CACHE_GROUP});
         } catch (Throwable t) {
             logger.error("Error loading fragments code by widget '{}'", widgetTypeCode, t);
             throw new EntException("Error loading fragment codes by widget " + widgetTypeCode, t);
@@ -206,7 +212,7 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
 
     @Override
     public List getGuiFragmentUtilizers(String guiFragmentCode) throws EntException {
-        List<GuiFragment> utilizers = new ArrayList<GuiFragment>();
+        List<GuiFragment> utilizers = new ArrayList<>();
         try {
             String strToSearch = "code=\"" + guiFragmentCode + "\"";
             Set<String> results = new HashSet<>();
@@ -275,9 +281,16 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     public void setGuiFragmentDAO(IGuiFragmentDAO guiFragmentDAO) {
         this.guiFragmentDAO = guiFragmentDAO;
     }
-
     protected IGuiFragmentDAO getGuiFragmentDAO() {
         return guiFragmentDAO;
     }
 
+    protected ICacheInfoManager getCacheInfoManager() {
+        return this.cacheInfoManager;
+    }
+    @Autowired
+    public void setCacheInfoManager(ICacheInfoManager cacheInfoManager) {
+        this.cacheInfoManager = cacheInfoManager;
+    }
+    
 }

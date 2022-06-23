@@ -13,36 +13,44 @@
  */
 package org.entando.entando.aps.system.services.activitystream;
 
-import java.util.List;
-
-import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
-import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.keygenerator.IKeyGeneratorManager;
+import java.util.List;
 import org.aspectj.lang.annotation.Before;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
 import org.entando.entando.aps.system.services.activitystream.model.ActivityStreamComment;
 import org.entando.entando.aps.system.services.activitystream.model.ActivityStreamLikeInfo;
-import org.entando.entando.aps.system.services.cache.CacheableInfo;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.userprofile.IUserProfileManager;
 import org.entando.entando.aps.system.services.userprofile.event.ProfileChangedEvent;
 import org.entando.entando.aps.system.services.userprofile.event.ProfileChangedObserver;
 import org.entando.entando.aps.system.services.userprofile.model.IUserProfile;
-import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
+import org.entando.entando.ent.util.EntLogging.EntLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
-/**
- * @author E.Santoboni - S.Puddu
- */
 public class SocialActivityStreamManager extends AbstractService implements ISocialActivityStreamManager, ProfileChangedObserver {
 
     private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(SocialActivityStreamManager.class);
 
-    @Override
+    private static final String LIKE_RECORDS_CACHE_GROUP = "ActivityStreamLikeRecords_cacheGroup";
+
+    private static final String COMMENT_RECORDS_CACHE_GROUP = "ActivityStreamCommentRecords_cacheGroup";
+
+    private IActionLogManager _actionLogManager;
+
+    private ISocialActivityStreamDAO _socialActivityStreamDAO;
+
+    private IKeyGeneratorManager _keyGeneratorManager;
+
+    private IUserProfileManager _userProfileManager;
+
+    private ICacheInfoManager cacheInfoManager;
+
     public void init() throws Exception {
         _logger.debug("{} ready", this.getClass().getName());
     }
@@ -61,7 +69,6 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
 
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'ActivityStreamLikeRecords_id_'.concat(#id)")
-    @CacheableInfo(groups = "'ActivityStreamLikeRecords_cacheGroup'")
     public List<ActivityStreamLikeInfo> getActionLikeRecords(int id) throws EntException {
         List<ActivityStreamLikeInfo> infos = null;
         try {
@@ -74,6 +81,8 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
                     String displayName = (null != profile) ? profile.getDisplayName() : username;
                     asli.setDisplayName(displayName);
                 }
+                String cacheKey = "ActivityStreamLikeRecords_id_" + id;
+                this.getCacheInfoManager().putInGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, new String[]{LIKE_RECORDS_CACHE_GROUP});
             }
         } catch (Throwable t) {
             _logger.error("Error extracting activity stream like records", t);
@@ -85,8 +94,8 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
     @Override
     public void updateFromProfileChanged(ProfileChangedEvent event) {
         try {
-            ICacheInfoManager cacheInfoManager = (ICacheInfoManager) this.getBeanFactory().getBean(SystemConstants.CACHE_INFO_MANAGER);
-            cacheInfoManager.flushGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, "ActivityStreamLikeRecords_cacheGroup");
+            this.getCacheInfoManager().flushGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, LIKE_RECORDS_CACHE_GROUP);
+            this.getCacheInfoManager().flushGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, COMMENT_RECORDS_CACHE_GROUP);
         } catch (Throwable t) {
             _logger.error("Error flushing cache group", t);
         }
@@ -124,7 +133,6 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
 
     @Override
     @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'ActivityStreamCommentRecords_id_'.concat(#id)")
-    @CacheableInfo(groups = "'ActivityStreamCommentRecords_cacheGroup'")
     public List<ActivityStreamComment> getActionCommentRecords(int id) throws EntException {
         List<ActivityStreamComment> infos = null;
         try {
@@ -137,6 +145,8 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
                     String displayName = (null != profile) ? profile.getDisplayName() : username;
                     comment.setDisplayName(displayName);
                 }
+                String cacheKey = "ActivityStreamCommentRecords_id_" + id;
+                this.getCacheInfoManager().putInGroup(ICacheInfoManager.DEFAULT_CACHE_NAME, cacheKey, new String[]{COMMENT_RECORDS_CACHE_GROUP});
             }
         } catch (Throwable t) {
             _logger.error("Error extracting activity stream like records for stream with id {}", id, t);
@@ -148,9 +158,8 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
     @Before("execution(* org.entando.entando.aps.system.services.actionlog.IActionLogManager.deleteActionRecord(..)) && args(id,..)")
     public void listenDeleteActionRecord(Integer id) {
         try {
-            ICacheInfoManager cacheInfoManager = (ICacheInfoManager) this.getBeanFactory().getBean(SystemConstants.CACHE_INFO_MANAGER);
-            cacheInfoManager.flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, "ActivityStreamCommentRecords_id_" + id);
-            cacheInfoManager.flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, "ActivityStreamLikeRecords_id_" + id);
+            this.getCacheInfoManager().flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, "ActivityStreamCommentRecords_id_" + id);
+            this.getCacheInfoManager().flushEntry(ICacheInfoManager.DEFAULT_CACHE_NAME, "ActivityStreamLikeRecords_id_" + id);
             this.getSocialActivityStreamDAO().deleteSocialRecordsRecord(id);
         } catch (Throwable t) {
             _logger.error("Error deleting action record", t);
@@ -189,10 +198,12 @@ public class SocialActivityStreamManager extends AbstractService implements ISoc
         this._userProfileManager = userProfileManager;
     }
 
-    private IActionLogManager _actionLogManager;
-
-    private ISocialActivityStreamDAO _socialActivityStreamDAO;
-    private IKeyGeneratorManager _keyGeneratorManager;
-    private IUserProfileManager _userProfileManager;
-
+    protected ICacheInfoManager getCacheInfoManager() {
+        return this.cacheInfoManager;
+    }
+    @Autowired
+    public void setCacheInfoManager(ICacheInfoManager cacheInfoManager) {
+        this.cacheInfoManager = cacheInfoManager;
+    }
+    
 }
