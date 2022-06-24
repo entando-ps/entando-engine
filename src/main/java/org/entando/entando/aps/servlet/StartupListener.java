@@ -14,7 +14,9 @@
 package org.entando.entando.aps.servlet;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.system.SystemConstants;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
 import org.entando.entando.aps.system.exception.CSRFProtectionException;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -23,6 +25,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Init the system when the web application is started
@@ -67,6 +72,19 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
         } else {
             LOGGER.warn("Content Security Policy (CSP) header is not enabled");
         }
+        
+        WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(svCtx);
+        ITenantManager tenantManager = wac.getBean(ITenantManager.class);
+        tenantManager.getCodes().parallelStream().forEach(tenantCode -> {
+            EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
+            try {
+                ApsWebApplicationUtils.executeSystemRefresh(svCtx);
+            } catch (Throwable t) {
+                LOGGER.error("Error initializing '" + tenantCode + "' tentant", t);
+            }
+            String tenantMsg = this.getClass().getName() + ": Tenant '" + tenantCode + "' inizialized";
+            ApsSystemUtils.directStdoutTrace(tenantMsg, true);
+        });
     }
 
 }

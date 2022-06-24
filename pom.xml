@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entando</groupId>
         <artifactId>entando-core-parent</artifactId>
-        <version>6.3.13</version>
+        <version>6.5.0-MT</version>
     </parent>
     <groupId>org.entando.entando</groupId>
     <artifactId>entando-engine</artifactId>
@@ -201,6 +201,43 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <ENTANDO_TENANTS>
+<![CDATA[
+[{
+    "tenantCode": "tenant1",
+    "kcEnabled": true,
+    "kcAuthUrl": "http://tenant1.test.nip.io/auth",
+    "kcRealm": "tenant1",
+    "kcClientId": "quickstart",
+    "kcClientSecret": "secret1",
+    "kcPublicClientId": "entando-web",
+    "kcSecureUris": "",
+    "kcDefaultAuthorizations": "",
+    "dbDriverClassName": "org.postgresql.Driver",
+    "dbUrl": "jdbc:postgresql://testDbServer:5432/tenantDb1",
+    "dbUsername": "db_user_2",
+    "dbPassword": "db_password_2"
+}, {
+    "tenantCode": "tenant2",
+    "kcEnabled": true,
+    "kcAuthUrl": "http://tenant2.test.nip.io/auth",
+    "kcRealm": "tenant2",
+    "kcClientId": "quickstart",
+    "kcClientSecret": "secret2",
+    "kcPublicClientId": "entando-web",
+    "kcSecureUris": "",
+    "kcDefaultAuthorizations": "",
+    "dbDriverClassName": "org.postgresql.Driver",
+    "dbUrl": "jdbc:postgresql://testDbServer:5432/tenantDb2",
+    "dbUsername": "db_user_1",
+    "dbPassword": "db_password_1"
+}]
+]]>
+                        </ENTANDO_TENANTS>
+                    </environmentVariables>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -484,6 +521,10 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>

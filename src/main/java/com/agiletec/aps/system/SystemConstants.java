@@ -236,6 +236,8 @@ public interface SystemConstants {
     public static final String OAUTH_TOKEN_MANAGER = "OAuth2TokenManager";
 
     public static final String OAUTH_CONSUMER_MANAGER = "OAuthConsumerManager";
+    
+    public static final String TENANT_MANAGER = "TenantManager";
 
     /**
      * Prefisso del nome del gruppo di oggetti in cache a servizio di una
