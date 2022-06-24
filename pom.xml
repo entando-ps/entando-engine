@@ -218,7 +218,8 @@
     "dbDriverClassName": "org.postgresql.Driver",
     "dbUrl": "jdbc:postgresql://testDbServer:5432/tenantDb1",
     "dbUsername": "db_user_2",
-    "dbPassword": "db_password_2"
+    "dbPassword": "db_password_2",
+    "customParam": "custom value"
 }, {
     "tenantCode": "tenant2",
     "kcEnabled": true,
