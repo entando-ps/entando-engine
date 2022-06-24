@@ -24,6 +24,8 @@ import java.util.function.BiFunction;
  * @author E.Santoboni
  */
 public interface IStorageManager extends Serializable {
+    
+    public String getBaseResourceUrl(boolean isProtected);
 	
 	public void saveFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException, IOException;
 	
