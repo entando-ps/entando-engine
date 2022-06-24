@@ -11,15 +11,19 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package com.agiletec.aps.tags;
+package org.entando.entando.aps.tags;
 
 /**
- * Return the URL of the static images 
+ * Return the URL of the CSS files.
+ * @author E.Santoboni - W.Ghelfi
  */
-public class ImgURLTag extends ResourceURLTag {
+public class CssURLTag extends ResourceURLTag {
+
+	private static final String CSS_FOLDER = "static/css/";
 	
+    @Override
 	public int doStartTag() throws javax.servlet.jsp.JspException {
-		this.setFolder("static/img/");
+		this.setFolder(CSS_FOLDER);
 		return EVAL_BODY_INCLUDE;
 	}
 	
