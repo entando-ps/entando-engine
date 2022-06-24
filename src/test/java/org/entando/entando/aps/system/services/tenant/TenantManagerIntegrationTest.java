@@ -67,6 +67,8 @@ public class TenantManagerIntegrationTest extends BaseTestCase {
         Assertions.assertEquals("jdbc:postgresql://testDbServer:5432/tenantDb1", config.getDbUrl());
         Assertions.assertEquals("db_user_2", config.getDbUsername());
         Assertions.assertEquals("db_password_2", config.getDbPassword());
+        Assertions.assertEquals("db_password_2", config.getProperty(TenantConfig.DB_PASSWORD_PROPERTY));
+        Assertions.assertEquals("custom value", config.getProperty("customParam"));
         Assertions.assertNull(this.tenantManager.getConfig("tenantX"));
     }
     
