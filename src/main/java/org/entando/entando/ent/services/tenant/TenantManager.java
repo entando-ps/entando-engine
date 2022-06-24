@@ -35,8 +35,6 @@ public class TenantManager extends AbstractService implements ITenantManager {
     private Map<String, DataSource> dataSources = new HashMap<>();
     
     private ITenantManagerCacheWrapper cacheWrapper;
-    
-    //private Map<String, TenantConfig> configs = new HashMap<>();
 
     @Override
     public void init() throws Exception {

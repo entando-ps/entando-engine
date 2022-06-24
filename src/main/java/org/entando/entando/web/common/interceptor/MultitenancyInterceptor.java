@@ -16,7 +16,7 @@ package org.entando.entando.web.common.interceptor;
 import com.agiletec.aps.system.EntThreadLocal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.entando.entando.aps.system.services.tenant.ITenantManager;
+import org.entando.entando.ent.services.tenant.ITenantManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

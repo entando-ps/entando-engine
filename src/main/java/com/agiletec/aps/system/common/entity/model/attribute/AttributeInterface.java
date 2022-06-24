@@ -325,8 +325,6 @@ public interface AttributeInterface extends Serializable {
     
     public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager, BeanFactory beanFactory);
 
-    public List<AttributeFieldError> validate(AttributeTracer tracer, ILangManager langManager, BeanFactory beanFactory);
-
     public Status getStatus();
 
     /**

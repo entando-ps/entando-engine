@@ -14,135 +14,95 @@
 package org.entando.entando.ent.services.tenant;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author E.Santoboni
  */
-public class TenantConfig implements Serializable {
+public class TenantConfig extends HashMap<String, String> implements Serializable {
     
-    private String tenantCode;
-    private boolean kcEnabled;
-    private String kcAuthUrl;
-    private String kcRealm;
-    private String kcClientId;
-    private String kcClientSecret;
-    private String kcPublicClientId;
-    private String kcSecureUris;
-    private String kcDefaultAuthorizations;
+    public static final String TENANT_CODE_PROPERTY = "tenantCode";
     
-	private String dbDriverClassName;
-	private String dbUrl;
-	private String dbUsername;
-	private String dbPassword;
+    public static final String KC_ENABLED_PROPERTY = "kcEnabled";
+    public static final String KC_AUTH_URL_PROPERTY = "kcAuthUrl";
+    public static final String KC_REALM_PROPERTY = "kcRealm";
+    public static final String KC_CLIENT_ID_PROPERTY = "kcClientId";
+    public static final String KC_CLIENT_SECRET_PROPERTY = "kcClientSecret";
+    public static final String KC_PUBLIC_CLIENT_PROPERTY = "kcPublicClientId";
+    public static final String KC_SECURE_URIS_PROPERTY = "kcSecureUris";
+    public static final String KC_DEFAULT_AUTH_PROPERTY = "kcDefaultAuthorizations";
+    
+    public static final String DB_DRIVER_CLASS_NAME_PROPERTY = "dbDriverClassName";
+    public static final String DB_URL_PROPERTY = "dbUrl";
+    public static final String DB_USERNAME_PROPERTY = "dbUsername";
+    public static final String DB_PASSWORD_PROPERTY = "dbPassword";
     
     @Override
     public TenantConfig clone() {
         TenantConfig clone = new TenantConfig();
-        clone.setDbDriverClassName(this.getDbDriverClassName());
-        clone.setDbPassword(this.getDbPassword());
-        clone.setDbUrl(this.getDbUrl());
-        clone.setDbUsername(this.getDbUsername());
-        clone.setKcAuthUrl(this.getKcAuthUrl());
-        clone.setKcClientId(this.getKcClientId());
-        clone.setKcClientSecret(this.getKcClientSecret());
-        clone.setKcDefaultAuthorizations(this.getKcDefaultAuthorizations());
-        clone.setKcEnabled(this.isKcEnabled());
-        clone.setKcPublicClientId(this.getKcPublicClientId());
-        clone.setKcRealm(this.getKcRealm());
-        clone.setKcSecureUris(this.getKcSecureUris());
-        clone.setTenantCode(this.getTenantCode());
+        clone.putAll(this);
         return clone;
     }
     
 	public String getTenantCode() {
-		return tenantCode;
-	}
-	public void setTenantCode(String tenantCode) {
-		this.tenantCode = tenantCode;
+		return this.get(TENANT_CODE_PROPERTY);
 	}
 
     public boolean isKcEnabled() {
-        return kcEnabled;
-    }
-    public void setKcEnabled(boolean kcEnabled) {
-        this.kcEnabled = kcEnabled;
+        String enabled = this.get(KC_ENABLED_PROPERTY);
+        if (!StringUtils.isEmpty(enabled)) {
+            return Boolean.valueOf(enabled);
+        }
+        return false;
     }
 
     public String getKcAuthUrl() {
-        return kcAuthUrl;
-    }
-    public void setKcAuthUrl(String kcAuthUrl) {
-        this.kcAuthUrl = kcAuthUrl;
+		return this.get(KC_AUTH_URL_PROPERTY);
     }
 
     public String getKcRealm() {
-        return kcRealm;
-    }
-    public void setKcRealm(String kcRealm) {
-        this.kcRealm = kcRealm;
+        return this.get(KC_REALM_PROPERTY);
     }
 
     public String getKcClientId() {
-        return kcClientId;
-    }
-    public void setKcClientId(String kcClientId) {
-        this.kcClientId = kcClientId;
+        return this.get(KC_CLIENT_ID_PROPERTY);
     }
 
     public String getKcClientSecret() {
-        return kcClientSecret;
-    }
-    public void setKcClientSecret(String kcClientSecret) {
-        this.kcClientSecret = kcClientSecret;
+        return this.get(KC_CLIENT_SECRET_PROPERTY);
     }
 
     public String getKcPublicClientId() {
-        return kcPublicClientId;
-    }
-    public void setKcPublicClientId(String kcPublicClientId) {
-        this.kcPublicClientId = kcPublicClientId;
+        return this.get(KC_PUBLIC_CLIENT_PROPERTY);
     }
 
     public String getKcSecureUris() {
-        return kcSecureUris;
-    }
-    public void setKcSecureUris(String kcSecureUris) {
-        this.kcSecureUris = kcSecureUris;
+        return this.get(KC_SECURE_URIS_PROPERTY);
     }
 
     public String getKcDefaultAuthorizations() {
-        return kcDefaultAuthorizations;
-    }
-    public void setKcDefaultAuthorizations(String kcDefaultAuthorizations) {
-        this.kcDefaultAuthorizations = kcDefaultAuthorizations;
+        return this.get(KC_DEFAULT_AUTH_PROPERTY);
     }
 
     public String getDbDriverClassName() {
-        return dbDriverClassName;
-    }
-    public void setDbDriverClassName(String dbDriverClassName) {
-        this.dbDriverClassName = dbDriverClassName;
+        return this.get(DB_DRIVER_CLASS_NAME_PROPERTY);
     }
 
     public String getDbUrl() {
-        return dbUrl;
-    }
-    public void setDbUrl(String dbUrl) {
-        this.dbUrl = dbUrl;
+        return this.get(DB_URL_PROPERTY);
     }
 
     public String getDbUsername() {
-        return dbUsername;
-    }
-    public void setDbUsername(String dbUsername) {
-        this.dbUsername = dbUsername;
+        return this.get(DB_USERNAME_PROPERTY);
     }
 
     public String getDbPassword() {
-        return dbPassword;
+        return this.get(DB_PASSWORD_PROPERTY);
     }
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
+
+    public String getProperty(String name) {
+        return this.get(name);
     }
     
 }
