@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.init.util;
 
+import com.google.common.base.Splitter;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.DateConverter;
 
@@ -27,7 +28,9 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.sql.DataSource;
 import org.apache.commons.lang3.StringUtils;
@@ -158,7 +161,17 @@ public class TableDataUtils {
                         String outputValue = value.toString();
                         outputValue = StringUtils.replace(outputValue, "'", "''");
                         if (isDataNeedsQuotes(types[i])) {
+                            if (outputValue != null && outputValue.length()>4000) {
+                                Iterable<String> chunks = Splitter.fixedLength(2000).split(outputValue);
+                                List<String> clobInstruction = new ArrayList<>();
+                                for (String chunk : chunks) {
+                                    clobInstruction.add("TO_CLOB('" + chunk + "')");
+                                }
+                                newRecord.append(String.join("||",clobInstruction));
+
+                            } else {
                             newRecord.append("'").append(outputValue).append("'");
+                            }
                         } else {
                             newRecord.append(outputValue);
                         }
