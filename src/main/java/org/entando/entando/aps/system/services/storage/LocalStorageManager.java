@@ -45,7 +45,16 @@ public class LocalStorageManager implements IStorageManager {
 	public void init() throws Exception {
 		logger.debug("{} ready", this.getClass().getName());
 	}
-
+    
+    @Override
+    public String getBaseResourceUrl(boolean isProtected) {
+        if (isProtected) {
+            return this.getProtectedBaseURL();
+        } else {
+            return this.getBaseURL();
+        }
+    }
+    
 	@Override
 	public void saveFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException, IOException {
 		subPath = (null == subPath) ? "" : subPath;
@@ -294,9 +303,8 @@ public class LocalStorageManager implements IStorageManager {
 	public String createFullPath(String subPath, boolean isProtectedResource) {
 		return withValidResourcePath(subPath, isProtectedResource, (basePath, fullPath) -> fullPath);
 	}
-
-	@Override
-	public <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
+    
+	protected <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
 									   BiFunction<String, String, T> bip) {
 		//-
 		resourceRelativePath = (resourceRelativePath == null) ? "" : resourceRelativePath;

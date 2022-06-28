@@ -11,13 +11,19 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package com.agiletec.aps.tags;
+package org.entando.entando.aps.tags;
 
 /**
- * Tag for the "External Framework" showlet.
- * @author M.Casari - E.Santoboni
- * @deprecated use InternalServletTag instead
+ * Return the URL of the static images 
  */
-public class ExternalFrameworkTag extends InternalServletTag {
+public class ImgURLTag extends ResourceURLTag {
+
+	private static final String IMG_FOLDER = "static/img/";
+	
+    @Override
+	public int doStartTag() throws javax.servlet.jsp.JspException {
+		this.setFolder(IMG_FOLDER);
+		return EVAL_BODY_INCLUDE;
+	}
 	
 }

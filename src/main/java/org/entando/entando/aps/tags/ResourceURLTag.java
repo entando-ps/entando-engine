@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2022-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -11,7 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-package com.agiletec.aps.tags;
+package org.entando.entando.aps.tags;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -22,6 +22,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.services.baseconfig.ConfigInterface;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
+import org.entando.entando.aps.system.services.storage.IStorageManager;
 
 /**
  * Return the URl of the resources.
@@ -36,57 +37,52 @@ public class ResourceURLTag extends TagSupport {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ResourceURLTag.class);
 	
+    private boolean ignoreTenant;
+	private String root;
+	private String folder;
+	
+    @Override
 	public int doEndTag() throws JspException {
 		try {
-			if (null == _root) {
-				ConfigInterface configService = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, this.pageContext);
-				_root = configService.getParam(SystemConstants.PAR_RESOURCES_ROOT_URL);
+			if (null == this.root) {
+                if (this.isIgnoreTenant()) {
+                    ConfigInterface configService = ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, ConfigInterface.class, this.pageContext);
+                    this.root = configService.getParam(SystemConstants.PAR_RESOURCES_ROOT_URL);
+                } else {
+                    IStorageManager storageManager = ApsWebApplicationUtils.getBean(SystemConstants.STORAGE_MANAGER, IStorageManager.class, this.pageContext);
+                    this.root = storageManager.getBaseResourceUrl(false);
+                }
 			}
-			if (null == _folder) {
-				_folder = "";
+			if (null == this.folder) {
+				this.folder = "";
 			}
-			pageContext.getOut().print(_root + _folder);
-		} catch (Throwable t) {
-			_logger.error("Error closing the tag", t);
-			//ApsSystemUtils.logThrowable(t, this, "doEndTag");
-			throw new JspException("Error closing the tag", t);
+			pageContext.getOut().print(this.getRoot() + this.getFolder());
+		} catch (Exception e) {
+			_logger.error("Error closing the tag", e);
+			throw new JspException("Error closing the tag", e);
 		}
 		return EVAL_PAGE;
 	}
-	
-	/**
-	 * Return the root folder
-	 * @return The root.
-	 */
+
+    public boolean isIgnoreTenant() {
+        return ignoreTenant;
+    }
+    public void setIgnoreTenant(boolean ignoreTenant) {
+        this.ignoreTenant = ignoreTenant;
+    }
+    
 	public String getRoot() {
-		return _root;
+		return root;
 	}
-
-	/**
-	 * Set the root folder.
-	 * @param root La root.
-	 */
 	public void setRoot(String root) {
-		this._root = root;
+		this.root = root;
 	}
-	
-	/**
-	 * Get the resource folder.
-	 * @return Il folder.
-	 */
+    
 	public String getFolder() {
-		return _folder;
+		return folder;
 	}
-
-	/**
-	 * Set the resource folder.
-	 * @param folder The folder
-	 */
 	public void setFolder(String folder) {
-		this._folder = folder;
+		this.folder = folder;
 	}
-	
-	private String _root;
-	private String _folder;
 
 }
