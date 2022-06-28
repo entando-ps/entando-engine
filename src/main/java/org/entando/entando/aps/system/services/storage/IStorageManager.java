@@ -18,7 +18,6 @@ import org.entando.entando.ent.exception.EntException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.function.BiFunction;
 
 /**
  * @author E.Santoboni
@@ -60,8 +59,5 @@ public interface IStorageManager extends Serializable {
 	public void editFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException;
 
 	public String createFullPath(String subPath, boolean isProtectedResource) throws EntException;
-
-	public <T> T withValidResourcePath(String resourceRelativePath, boolean isProtectedResource,
-									   BiFunction<String, String, T> bip);
 
 }
