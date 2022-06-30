@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author E.Santoboni
  */
-public class TenantConfig extends HashMap<String, String> implements Serializable {
+public class TenantConfig extends HashMap<String, Object> implements Serializable {
     
     public static final String TENANT_CODE_PROPERTY = "tenantCode";
     
@@ -46,63 +46,63 @@ public class TenantConfig extends HashMap<String, String> implements Serializabl
     }
     
 	public String getTenantCode() {
-		return this.get(TENANT_CODE_PROPERTY);
+		return this.get(TENANT_CODE_PROPERTY).toString();
 	}
 
     public boolean isKcEnabled() {
-        String enabled = this.get(KC_ENABLED_PROPERTY);
-        if (!StringUtils.isEmpty(enabled)) {
-            return Boolean.valueOf(enabled);
+        Object enabled = this.get(KC_ENABLED_PROPERTY);
+        if (null != enabled) {
+            return Boolean.valueOf(enabled.toString());
         }
         return false;
     }
 
     public String getKcAuthUrl() {
-		return this.get(KC_AUTH_URL_PROPERTY);
+		return this.get(KC_AUTH_URL_PROPERTY).toString();
     }
 
     public String getKcRealm() {
-        return this.get(KC_REALM_PROPERTY);
+        return this.get(KC_REALM_PROPERTY).toString();
     }
 
     public String getKcClientId() {
-        return this.get(KC_CLIENT_ID_PROPERTY);
+        return this.get(KC_CLIENT_ID_PROPERTY).toString();
     }
 
     public String getKcClientSecret() {
-        return this.get(KC_CLIENT_SECRET_PROPERTY);
+        return this.get(KC_CLIENT_SECRET_PROPERTY).toString();
     }
 
     public String getKcPublicClientId() {
-        return this.get(KC_PUBLIC_CLIENT_PROPERTY);
+        return this.get(KC_PUBLIC_CLIENT_PROPERTY).toString();
     }
 
     public String getKcSecureUris() {
-        return this.get(KC_SECURE_URIS_PROPERTY);
+        return this.get(KC_SECURE_URIS_PROPERTY).toString();
     }
 
     public String getKcDefaultAuthorizations() {
-        return this.get(KC_DEFAULT_AUTH_PROPERTY);
+        return this.get(KC_DEFAULT_AUTH_PROPERTY).toString();
     }
 
     public String getDbDriverClassName() {
-        return this.get(DB_DRIVER_CLASS_NAME_PROPERTY);
+        return this.get(DB_DRIVER_CLASS_NAME_PROPERTY).toString();
     }
 
     public String getDbUrl() {
-        return this.get(DB_URL_PROPERTY);
+        return this.get(DB_URL_PROPERTY).toString();
     }
 
     public String getDbUsername() {
-        return this.get(DB_USERNAME_PROPERTY);
+        return this.get(DB_USERNAME_PROPERTY).toString();
     }
 
     public String getDbPassword() {
-        return this.get(DB_PASSWORD_PROPERTY);
+        return this.get(DB_PASSWORD_PROPERTY).toString();
     }
 
     public String getProperty(String name) {
-        return this.get(name);
+        return this.get(name).toString();
     }
     
 }
