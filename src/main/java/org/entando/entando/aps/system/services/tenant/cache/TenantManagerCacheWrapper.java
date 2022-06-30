@@ -14,43 +14,40 @@
 package org.entando.entando.aps.system.services.tenant.cache;
 
 import com.agiletec.aps.system.common.AbstractGenericCacheWrapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.aps.system.services.tenant.TenantConfig;
+import org.entando.entando.ent.exception.EntException;
+import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 
 /**
  * @author E.Santoboni
  */
-public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<TenantConfig> implements ITenantManagerCacheWrapper {
+public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Map<String, String>> implements ITenantManagerCacheWrapper {
     
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(TenantManagerCacheWrapper.class);
     
     @Value("${ENTANDO_TENANTS:}")
     private String tenantsConfig;
     
-    @Autowired
-    private ObjectMapper objectMapper;
-    
     @Override
 	public void initCache() throws EntException {
         try {
             if (!StringUtils.isBlank(this.tenantsConfig)) {
                 Cache cache = this.getCache();
-                TenantConfig[] configArray = this.objectMapper.readValue(tenantsConfig, new TypeReference<TenantConfig[]>(){});
-                List<TenantConfig> list = Arrays.asList(configArray);
-                Map<String, TenantConfig> tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
+                ObjectMapper objectMapper = new ObjectMapper();
+                CollectionType mapCollectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class);
+                List<Map<String, String>> result = objectMapper.readValue(this.tenantsConfig, mapCollectionType);
+                Map<String, Map<String, String>> tenantsMap = result.stream().collect(Collectors.toMap(tc -> tc.get(TenantConfig.TENANT_CODE_PROPERTY), tc -> tc));
                 this.insertAndCleanCache(cache, tenantsMap);
             }
         } catch (Exception e) {
@@ -60,13 +57,25 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
 	}
     
     @Override
-	public TenantConfig getTenantConfig(String code) {
-		TenantConfig config = this.get(this.getCache(), this.getCacheKeyPrefix() + code, TenantConfig.class);
-        if (null != config) {
-            return config.clone();
+    public TenantConfig getTenantConfig(String code) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CollectionType mapCollectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class);
+            List<Map<String, Object>> result = objectMapper.readValue(this.tenantsConfig, mapCollectionType);
+            for (int i = 0; i < result.size(); i++) {
+                Map<String, Object> map = result.get(i);
+                if (code.equalsIgnoreCase(map.get(TenantConfig.TENANT_CODE_PROPERTY).toString())) {
+                    TenantConfig config = new TenantConfig();
+                    config.putAll(map);
+                    return config;
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("Error extracting tenant config " + code, e);
+            throw new EntRuntimeException("Error loading tenant " + code, e);
         }
-        return null;
-	}
+    }
     
     @Override
     @SuppressWarnings("unchecked")
