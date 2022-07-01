@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.entando.entando.aps.system.services.guifragment.event.GuiFragmentChangedEvent;
@@ -111,15 +112,11 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     protected FieldSearchFilter[] addFilter(FieldSearchFilter[] filters, FieldSearchFilter filterToAdd) {
-        int len = (null != filters) ? filters.length : 0;
-        FieldSearchFilter[] newFilters = new FieldSearchFilter[len + 1];
         if (null != filters) {
-            for (int i = 0; i < len; i++) {
-                newFilters[i] = filters[i];
-            }
+            return ArrayUtils.add(filters, filterToAdd);
+        } else {
+            return new FieldSearchFilter[]{filterToAdd};
         }
-        newFilters[len] = filterToAdd;
-        return newFilters;
     }
 
     @Override
@@ -175,7 +172,8 @@ public class GuiFragmentManager extends AbstractParameterizableService implement
     }
 
     @Override
-    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, key = "'GuiFragment_uniqueByWidgetType_'.concat(#widgetTypeCode)")
+    @Cacheable(value = ICacheInfoManager.DEFAULT_CACHE_NAME, 
+            key = "'GuiFragment_uniqueByWidgetType_'.concat(#widgetTypeCode)", condition = "null != #result")
     public GuiFragment getUniqueGuiFragmentByWidgetType(String widgetTypeCode) throws EntException {
         GuiFragment guiFragment = null;
         try {

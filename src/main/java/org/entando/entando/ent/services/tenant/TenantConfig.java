@@ -15,8 +15,6 @@ package org.entando.entando.ent.services.tenant;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * @author E.Santoboni
  */
