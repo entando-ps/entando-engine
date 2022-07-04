@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.actionlog;
 
+import com.agiletec.aps.system.EntThread;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
@@ -20,27 +21,27 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 /**
  * @author E.Santoboni
  */
-public class ActionLogAppenderThread extends Thread {
+public class ActionLogAppenderThread extends EntThread {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActionLogAppenderThread.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ActionLogAppenderThread.class);
 	
-	public ActionLogAppenderThread(ActionLogRecord actionRecordToAdd, 
-			ActionLogManager actionLogManager) {
-		this._actionLogManager = actionLogManager;
-		this._actionRecordToAdd = actionRecordToAdd;
+	private ActionLogRecord actionRecordToAdd;
+	private ActionLogManager actionLogManager;
+	
+	public ActionLogAppenderThread(ActionLogRecord actionRecordToAdd, ActionLogManager actionLogManager) {
+        super();
+		this.actionLogManager = actionLogManager;
+		this.actionRecordToAdd = actionRecordToAdd;
 	}
 	
 	@Override
 	public void run() {
+        super.applyLocalMap();
 		try {
-			this._actionLogManager.addActionRecordByThread(this._actionRecordToAdd);
+			this.actionLogManager.addActionRecordByThread(this.actionRecordToAdd);
 		} catch (Throwable t) {
-			_logger.error("error in run", t);
-			//ApsSystemUtils.logThrowable(t, this, "run");
+			logger.error("error in run", t);
 		}
 	}
-	
-	private ActionLogRecord _actionRecordToAdd;
-	private ActionLogManager _actionLogManager;
 	
 }

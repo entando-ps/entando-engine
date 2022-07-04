@@ -18,40 +18,40 @@ import java.util.Map;
 
 public class EntThreadLocal {
     
-    private static final ThreadLocal<Map<String, Object>> sessionThreadLocal = new ThreadLocal<Map<String, Object>>();
+    private static final ThreadLocal<Map<String, Object>> threadLocalMap = new ThreadLocal<Map<String, Object>>();
     
     private EntThreadLocal() {
-        throw new IllegalStateException("ReqCtxThreadLocal is an Utility class");
+        throw new IllegalStateException("EntThreadLocal is an Utility class");
     }
     
     public static void init() {
-		Map<String, Object> map = sessionThreadLocal.get();
+		Map<String, Object> map = threadLocalMap.get();
 		if (null != map) {
 			map.clear();
 		} else {
-			sessionThreadLocal.set(new HashMap<String, Object>());
-			map = sessionThreadLocal.get();
+			threadLocalMap.set(new HashMap<String, Object>());
+			map = threadLocalMap.get();
 		}
 	}
 
 	public static void destroy() {
-		Map<String, Object> map = sessionThreadLocal.get();
+		Map<String, Object> map = threadLocalMap.get();
 		if (null != map) {
 			map.clear();
 		}
 	}
     
 	public static void set(String key, Object value) {
-		Map<String, Object> map = sessionThreadLocal.get();
+		Map<String, Object> map = threadLocalMap.get();
 		if (null == map) {
-			sessionThreadLocal.set(new HashMap<>());
-			map = sessionThreadLocal.get();
+			threadLocalMap.set(new HashMap<>());
+			map = threadLocalMap.get();
 		}
 		map.put(key, value);
 	}
 
 	public static Object get(String key) {
-		Map<String, Object> map = sessionThreadLocal.get();
+		Map<String, Object> map = threadLocalMap.get();
 		if (null != map) {
 			return map.get(key);
 		}
@@ -59,10 +59,18 @@ public class EntThreadLocal {
 	}
     
     public static void remove(String key) {
-		Map<String, Object> map = sessionThreadLocal.get();
+		Map<String, Object> map = threadLocalMap.get();
 		if (null != map) {
             map.remove(key);
 		}
+	}
+
+	public static Map<String, Object> getMap() {
+		Map<String, Object> map = threadLocalMap.get();
+		if (null != map) {
+			return new HashMap<>(map);
+		}
+		return null;
 	}
     
 }

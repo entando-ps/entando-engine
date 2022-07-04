@@ -31,6 +31,7 @@ public class ReloadingCategoryReferencesThread extends NotifyingThread {
      * @param categoryCode 
 	 */
 	public ReloadingCategoryReferencesThread(ICategoryManager categoryManager, String beanName, String categoryCode) {
+        super();
 		this._categoryManager = categoryManager;
 		this._beanName = beanName;
 		this._categoryCode = categoryCode;

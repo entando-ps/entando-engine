@@ -13,11 +13,13 @@
  */
 package com.agiletec.aps.system.common.notify;
 
+import com.agiletec.aps.system.EntThread;
+
 /**
  * Thread Class delegate to notify event.
  * @author E.Santoboni
  */
-public class NotifyingEventThread extends Thread {
+public class NotifyingEventThread extends EntThread {
 	
 	/**
 	 * Inizializza il thread delegato notificazione eventi.
@@ -25,12 +27,14 @@ public class NotifyingEventThread extends Thread {
 	 * @param event l'evento da notificare.
 	 */
 	public NotifyingEventThread(NotifyManager notifyManager, ApsEvent event) {
+        super();
 		this._notifyManager = notifyManager;
 		this._event = event;
 	}
 	
 	@Override
 	public void run() {
+        super.applyLocalMap();
 		this._notifyManager.notify(this._event);
 	}
 	

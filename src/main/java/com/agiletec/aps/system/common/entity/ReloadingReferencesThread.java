@@ -13,6 +13,7 @@
  */
 package com.agiletec.aps.system.common.entity;
 
+import com.agiletec.aps.system.EntThread;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
  * Thread Class used to reload all entity references. 
  * @author E.Santoboni
  */
-public class ReloadingReferencesThread extends Thread {
+public class ReloadingReferencesThread extends EntThread {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ReloadingReferencesThread.class);
 	
@@ -33,12 +34,14 @@ public class ReloadingReferencesThread extends Thread {
 	 * @param typeCode The type Code of entities to reload. If null, reload all entities.
 	 */
 	public ReloadingReferencesThread(ApsEntityManager entityManager, String typeCode) {
+        super();
 		this._entityManager = entityManager;
 		this._typeCode = typeCode;
 	}
 	
 	@Override
 	public void run() {
+        super.initLocalMap();
 		if (null != this._typeCode) {
 			this.reloadEntityTypeReferences(this._typeCode);
 		} else {
