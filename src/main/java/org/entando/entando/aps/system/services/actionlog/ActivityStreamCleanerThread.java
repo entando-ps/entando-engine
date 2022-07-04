@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.services.actionlog;
 
+import com.agiletec.aps.system.EntThread;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -22,33 +23,34 @@ import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 /**
  * @author E.Santoboni
  */
-public class ActivityStreamCleanerThread extends Thread {
+public class ActivityStreamCleanerThread extends EntThread {
 	
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(ActivityStreamCleanerThread.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ActivityStreamCleanerThread.class);
+	
+	private Integer maxActivitySizeByGroup;
+	private IActionLogManager actionLogManager;
 	
 	public ActivityStreamCleanerThread(Integer maxActivitySizeByGroup, IActionLogManager actionLogManager) {
-		this._maxActivitySizeByGroup = maxActivitySizeByGroup;
-		this._actionLogManager = actionLogManager;
+        super();
+		this.maxActivitySizeByGroup = maxActivitySizeByGroup;
+		this.actionLogManager = actionLogManager;
 	}
 	
 	@Override
 	public void run() {
+        super.applyLocalMap();
 		try {
-			Set<Integer> ids = this._actionLogManager.extractOldRecords(this._maxActivitySizeByGroup);
+			Set<Integer> ids = this.actionLogManager.extractOldRecords(this.maxActivitySizeByGroup);
 			if (null != ids) {
 				Iterator<Integer> iter = ids.iterator();
 				while (iter.hasNext()) {
 					Integer id = iter.next();
-					this._actionLogManager.deleteActionRecord(id);
+					this.actionLogManager.deleteActionRecord(id);
 				}
 			}
 		} catch (Throwable t) {
-			_logger.error("Error in run ", t);
-			//ApsSystemUtils.logThrowable(t, this, "run");
+			logger.error("Error in run ", t);
 		}
 	}
-	
-	private Integer _maxActivitySizeByGroup;
-	private IActionLogManager _actionLogManager;
 	
 }

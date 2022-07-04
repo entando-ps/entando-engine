@@ -16,6 +16,7 @@ package org.entando.entando.aps.system.init;
 import javax.sql.DataSource;
 
 import org.entando.entando.aps.system.init.model.SystemInstallationReport;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.BeansException;
@@ -30,11 +31,13 @@ import org.entando.entando.ent.exception.EntException;
 public abstract class AbstractInitializerManager implements BeanFactoryAware {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractInitializerManager.class);
-	
+    
 	protected SystemInstallationReport extractReport() throws EntException {
 		SystemInstallationReport report = null;
 		try {
 			InstallationReportDAO dao = new InstallationReportDAO();
+            ITenantManager tenantManager = this.getBeanFactory().getBean(ITenantManager.class);
+            dao.setTenantManager(tenantManager);
 			DataSource dataSource = (DataSource) this.getBeanFactory().getBean("portDataSource");
 			dao.setDataSource(dataSource);
 			report = dao.loadReport(this.getConfigVersion());

@@ -13,11 +13,16 @@
  */
 package com.agiletec.aps.system.services.category.thread;
 
+import com.agiletec.aps.system.EntThread;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public abstract class NotifyingThread extends Thread {
-
+public abstract class NotifyingThread extends EntThread {
+    
+    protected NotifyingThread() {
+        super();
+    }
+    
 	private final Set<ThreadCompleteListener> listeners	= new CopyOnWriteArraySet<ThreadCompleteListener>();
 
 	public final void addListener(final ThreadCompleteListener listener) {
@@ -33,8 +38,10 @@ public abstract class NotifyingThread extends Thread {
 			listener.notifyOfThreadComplete(this);
 		}
 	}
+    
 	@Override
 	public final void run() {
+        this.applyLocalMap();
 		try {
 			doRun();
 		} finally {

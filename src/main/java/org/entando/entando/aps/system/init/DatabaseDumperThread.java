@@ -13,30 +13,32 @@
  */
 package org.entando.entando.aps.system.init;
 
+import com.agiletec.aps.system.EntThread;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 
 /**
  * @author E.Santoboni
  */
-public class DatabaseDumperThread extends Thread {
+public class DatabaseDumperThread extends EntThread {
 
-	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(DatabaseDumperThread.class);
+	private static final EntLogger logger = EntLogFactory.getSanitizedLogger(DatabaseDumperThread.class);
+	
+	private DatabaseManager manager;
 	
 	public DatabaseDumperThread(DatabaseManager manager) {
-		this._manager = manager;
+        super();
+		this.manager = manager;
 	}
 	
 	@Override
 	public void run() {
+        this.applyLocalMap();
 		try {
-			this._manager.executeBackup();
+			this.manager.executeBackup();
 		} catch (Throwable t) {
-			_logger.error("error in run", t);
-			//ApsSystemUtils.logThrowable(t, this, "run");
+			logger.error("error in run", t);
 		}
 	}
-	
-	private DatabaseManager _manager;
 	
 }
