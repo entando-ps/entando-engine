@@ -205,18 +205,13 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         this.getCache(targetCache).evict(key);
     }
 
-    /**
-     * Put an object on the given cache.
-     *
-     * @param targetCache The cache name
-     * @param key The key
-     * @param obj The object to put into cache.
-     */
+    @Override
     public void putInCache(String targetCache, String key, Object obj) {
         Cache cache = this.getCache(targetCache);
         cache.put(key, obj);
     }
 
+    @Override
     public void putInCache(String targetCache, String key, Object obj, String[] groups) {
         Cache cache = this.getCache(targetCache);
         cache.put(key, obj);
@@ -326,6 +321,7 @@ public class CacheInfoManager extends AbstractService implements ICacheInfoManag
         return this.getSpringCacheManager().getCache(cacheName);
     }
 
+    @Override
     public Object getFromCache(String targetCache, String key) {
         if (isExpired(targetCache, key)) {
             this.flushEntry(targetCache, key);

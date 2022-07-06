@@ -13,6 +13,8 @@
  */
 package org.entando.entando.aps.system.services.cache;
 
+import org.springframework.cache.Cache;
+
 /**
  * @author E.Santoboni
  */
@@ -28,12 +30,18 @@ public interface ICacheInfoManager {
 
 	@Deprecated
 	public static final String CACHE_NAME = DEFAULT_CACHE_NAME;
+    
+    public Object getFromCache(String targetCache, String key);
+    
+    public void putInCache(String targetCache, String key, Object obj);
+
+    public void putInCache(String targetCache, String key, Object obj, String[] groups);
+
+	public void putInGroup(String targetCache, String key, String[] groups);
 
 	public void flushEntry(String targetCache, String key);
 
 	public void flushGroup(String targetCache, String group);
-
-	public void putInGroup(String targetCache, String key, String[] groups);
 	
 	public boolean isExpired(String targetCache, String key);
 
