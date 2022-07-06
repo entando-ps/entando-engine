@@ -35,7 +35,6 @@ import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.system.services.user.IUserManager;
 import com.agiletec.aps.system.services.user.User;
 import com.agiletec.aps.system.services.user.UserDetails;
-import org.entando.entando.aps.system.services.cache.CacheInfoManager;
 import org.entando.entando.aps.system.services.cache.ICacheInfoManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ class UserProfileManagerIntegrationTest extends BaseTestCase {
 
     private IUserProfileManager profileManager;
     private IUserManager userManager;
-    private CacheInfoManager cacheInfoManager;
+    private ICacheInfoManager cacheInfoManager;
 
     @Test
     void testInitialize() {
@@ -266,7 +265,7 @@ class UserProfileManagerIntegrationTest extends BaseTestCase {
         try {
             this.profileManager = (IUserProfileManager) this.getService(SystemConstants.USER_PROFILE_MANAGER);
             this.userManager = (IUserManager) this.getService(SystemConstants.USER_MANAGER);
-            this.cacheInfoManager = (CacheInfoManager) this.getService(SystemConstants.CACHE_INFO_MANAGER);
+            this.cacheInfoManager = (ICacheInfoManager) this.getService(SystemConstants.CACHE_INFO_MANAGER);
         } catch (Exception e) {
             throw e;
         }
