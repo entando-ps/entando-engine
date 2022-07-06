@@ -13,6 +13,7 @@
  */
 package org.entando.entando.aps.system.init;
 
+import com.agiletec.aps.system.EntThreadLocal;
 import org.entando.entando.ent.exception.EntException;
 import com.agiletec.aps.util.DateConverter;
 import org.entando.entando.aps.system.init.model.Component;
@@ -31,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.entando.entando.ent.services.tenant.ITenantManager;
 
 /**
  * @author E.Santoboni
@@ -78,7 +80,14 @@ public class DatabaseDumper extends AbstractDatabaseUtils {
                 if (null == tableNames || tableNames.isEmpty()) {
                     continue;
                 }
-                DataSource dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
+                DataSource dataSource = null;
+                String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+                if (null != tenantCode) {
+                    ITenantManager tenantManager = this.getBeanFactory().getBean(ITenantManager.class);
+                    dataSource = tenantManager.getDatasource(tenantCode);
+                } else {
+                    dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
+                }
                 for (int k = 0; k < tableNames.size(); k++) {
                     String tableName = tableNames.get(k);
                     this.dumpTableData(tableName, dataSourceName, dataSource, report, backupSubFolder);
