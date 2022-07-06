@@ -46,15 +46,6 @@ public class LocalStorageManager implements IStorageManager {
 		logger.debug("{} ready", this.getClass().getName());
 	}
     
-    @Override
-    public String getBaseResourceUrl(boolean isProtected) {
-        if (isProtected) {
-            return this.getProtectedBaseURL();
-        } else {
-            return this.getBaseURL();
-        }
-    }
-    
 	@Override
 	public void saveFile(String subPath, boolean isProtectedResource, InputStream is) throws EntException, IOException {
 		subPath = (null == subPath) ? "" : subPath;
