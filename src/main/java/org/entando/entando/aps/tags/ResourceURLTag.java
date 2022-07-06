@@ -50,7 +50,10 @@ public class ResourceURLTag extends TagSupport {
                     this.root = configService.getParam(SystemConstants.PAR_RESOURCES_ROOT_URL);
                 } else {
                     IStorageManager storageManager = ApsWebApplicationUtils.getBean(SystemConstants.STORAGE_MANAGER, IStorageManager.class, this.pageContext);
-                    this.root = storageManager.getBaseResourceUrl(false);
+                    this.root = storageManager.createFullPath("", false);
+                }
+                if (!this.root.endsWith("/")) {
+                    this.root += "/";
                 }
 			}
 			if (null == this.folder) {
