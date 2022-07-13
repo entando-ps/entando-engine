@@ -41,7 +41,7 @@ public class ReloadingReferencesThread extends EntThread {
 	
 	@Override
 	public void run() {
-        super.initLocalMap();
+        super.applyLocalMap();
 		if (null != this._typeCode) {
 			this.reloadEntityTypeReferences(this._typeCode);
 		} else {
