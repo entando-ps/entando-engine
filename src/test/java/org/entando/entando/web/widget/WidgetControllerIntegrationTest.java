@@ -457,6 +457,7 @@ class WidgetControllerIntegrationTest extends AbstractControllerIntegrationTest 
             this.widgetTypeManager.deleteWidgetType(newCode);
         }
     }
+    
     @Test
     void testAddUpdateWidgetWithParentAndParameters() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -501,7 +502,7 @@ class WidgetControllerIntegrationTest extends AbstractControllerIntegrationTest 
             resultMaster.andExpect(jsonPath("$.payload.parameters[2].description", is("Description of parameter 3")));
             resultMaster.andExpect(jsonPath("$.payload.parameters[3].code", is("param4")));
             resultMaster.andExpect(jsonPath("$.payload.parameters[3].description", nullValue()));
-            resultMaster.andExpect(jsonPath("$.payload.configUiName", is("configAction")));
+            resultMaster.andExpect(jsonPath("$.payload.action", is("configAction")));
             
             widgetType = this.widgetTypeManager.getWidgetType(code);
             Assertions.assertNotNull(widgetType);
@@ -546,9 +547,8 @@ class WidgetControllerIntegrationTest extends AbstractControllerIntegrationTest 
             executeWidgetPut(requestChild, childCode, accessToken, status().isOk())
                     .andDo(resultPrint())
                     .andExpect(jsonPath("$.payload.code", is(childCode)))
-                    .andExpect(jsonPath("$.payload.parentType", is(parentCode)))
-                    .andExpect(jsonPath("$.payload.guiFragments.size()", is(1)))
-                    .andExpect(jsonPath("$.payload.guiFragments[0].customUi", is(parentCustomUi)))
+                    .andExpect(jsonPath("$.payload.parentType", is(code)))
+                    .andExpect(jsonPath("$.payload.guiFragments.size()", is(0)))
                     .andExpect(jsonPath("$.payload.parameters.size()", is(0)))
                     .andExpect(jsonPath("$.payload.hasConfig", is(false)))
                     .andExpect(jsonPath("$.payload.config.size()", is(2)))
