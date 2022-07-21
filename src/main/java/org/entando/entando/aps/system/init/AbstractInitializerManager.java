@@ -23,7 +23,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 
 import org.entando.entando.ent.exception.EntException;
-import org.entando.entando.ent.services.tenant.ITenantManager;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
 
 /**
  * @author E.Santoboni

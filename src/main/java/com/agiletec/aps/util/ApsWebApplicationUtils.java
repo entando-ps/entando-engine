@@ -22,6 +22,7 @@ import javax.servlet.jsp.PageContext;
 import com.agiletec.aps.system.SystemConstants;
 import com.agiletec.aps.system.common.AbstractService;
 import com.agiletec.aps.system.common.RefreshableBean;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.core.io.Resource;
@@ -35,6 +36,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ApsWebApplicationUtils {
 
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsWebApplicationUtils.class);
+    
+    public static String extractCurrentTenantCode(HttpServletRequest request) {
+        String tenantCode = request.getServerName().split("\\.")[0];
+        ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
+        if (tenantManager.exists(tenantCode)) {
+            return tenantCode;
+        }
+        return null;
+    }
 	
 	/**
 	 * Resolve the given location pattern into Resource objects. 

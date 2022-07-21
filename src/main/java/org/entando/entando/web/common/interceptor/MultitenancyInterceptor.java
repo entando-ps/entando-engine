@@ -14,9 +14,10 @@
 package org.entando.entando.web.common.interceptor;
 
 import com.agiletec.aps.system.EntThreadLocal;
+import com.agiletec.aps.util.ApsWebApplicationUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.entando.entando.ent.services.tenant.ITenantManager;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -24,20 +25,18 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * @author E.Santoboni
  */
 public class MultitenancyInterceptor extends HandlerInterceptorAdapter {
-    
-    private ITenantManager tenantManager;
-    
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String tenantCode = request.getServerName().split("\\.")[0];
-        if (this.getTenantManager().exists(tenantCode)) {
+        String tenantCode = ApsWebApplicationUtils.extractCurrentTenantCode(request);
+        if (null != tenantCode) {
             EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
         } else {
             EntThreadLocal.remove(ITenantManager.THREAD_LOCAL_TENANT_CODE);
         }
         return true;
     }
-    
+
     @Override
     public void afterCompletion(
             HttpServletRequest request,
@@ -45,13 +44,5 @@ public class MultitenancyInterceptor extends HandlerInterceptorAdapter {
             Object handler, Exception ex) {
         EntThreadLocal.remove(ITenantManager.THREAD_LOCAL_TENANT_CODE);
     }
-    
-    protected ITenantManager getTenantManager() {
-        return tenantManager;
-    }
-    @Autowired
-    public void setTenantManager(ITenantManager tenantManager) {
-        this.tenantManager = tenantManager;
-    }
-    
+
 }

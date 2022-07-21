@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.entando.entando.ent.services.tenant.ITenantManager;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
 
 /**
  * @author E.Santoboni
