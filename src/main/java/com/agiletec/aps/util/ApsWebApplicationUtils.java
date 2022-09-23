@@ -38,8 +38,9 @@ public class ApsWebApplicationUtils {
     private static final EntLogger logger = EntLogFactory.getSanitizedLogger(ApsWebApplicationUtils.class);
     
     public static String extractCurrentTenantCode(HttpServletRequest request) {
-        String tenantCode = request.getServerName().split("\\.")[0];
+        String domainPrefix = request.getServerName().split("\\.")[0];
         ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
+        String tenantCode = tenantManager.getCodeByDomainPrefix(domainPrefix);
         if (tenantManager.exists(tenantCode)) {
             return tenantCode;
         }

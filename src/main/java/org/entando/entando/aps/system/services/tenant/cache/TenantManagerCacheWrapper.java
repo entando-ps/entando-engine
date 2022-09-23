@@ -53,6 +53,9 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
                 List<TenantConfig> list = Arrays.asList(configArray);
                 Map<String, TenantConfig> tenantsMap = list.stream().collect(Collectors.toMap(TenantConfig::getTenantCode, tc -> tc));
                 this.insertAndCleanCache(cache, tenantsMap);
+                Map<String, String> externalMapping = list.stream()
+                        .filter(c -> !StringUtils.isBlank(c.getDomainPrefix())).collect(Collectors.toMap(TenantConfig::getDomainPrefix, TenantConfig::getTenantCode));
+                cache.put(TENANT_EXT_MAPPING, externalMapping);
             }
         } catch (Exception e) {
             logger.error("Error extracting tenant configs", e);
@@ -61,12 +64,22 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
     }
 
     @Override
-    public TenantConfig getTenantConfig(String code) {
+    public TenantConfig getConfig(String code) {
         TenantConfig config = this.get(this.getCache(), this.getCacheKeyPrefix() + code, TenantConfig.class);
         if (null != config) {
             return config.clone();
         }
         return null;
+    }
+    
+    @Override
+    public String getCodeByDomainPrefix(String domainPrefix) {
+        Cache cache = this.getCache();
+        Map<String,String> mapping = (Map<String,String>) this.get(cache, TENANT_EXT_MAPPING, Map.class);
+        if (null != mapping && !StringUtils.isBlank(mapping.get(domainPrefix))) {
+            return mapping.get(domainPrefix);
+        }
+        return domainPrefix;
     }
     
     @Override
@@ -87,12 +100,12 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
 
     @Override
     protected String getCodesCacheKey() {
-        return TENANT_CODES_CACHE_NAME;
+        return TENANT_CODES;
     }
 
     @Override
     protected String getCacheKeyPrefix() {
-        return TENANT_CACHE_NAME_PREFIX;
+        return TENANT_PREFIX;
     }
 
     @Override

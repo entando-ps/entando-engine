@@ -24,12 +24,15 @@ import org.entando.entando.aps.system.services.tenant.TenantConfig;
 public interface ITenantManagerCacheWrapper extends ICacheWrapper {
     
     public static final String TENANT_MANAGER_CACHE_NAME = "Entando_TenantManager";
-	public static final String TENANT_CACHE_NAME_PREFIX = "TenantManager_tenant_";
-	public static final String TENANT_CODES_CACHE_NAME = "TenantManager_tenantsCodes";
+	public static final String TENANT_PREFIX = "TenantManager_tenant_";
+	public static final String TENANT_CODES = "TenantManager_tenantsCodes";
+	public static final String TENANT_EXT_MAPPING = "TenantManager_externalMapping";
     
     public void initCache() throws EntException;
     
-    public TenantConfig getTenantConfig(String code);
+    public TenantConfig getConfig(String code);
+    
+    public String getCodeByDomainPrefix(String domainPrefix);
     
     public List<String> getCodes();
     

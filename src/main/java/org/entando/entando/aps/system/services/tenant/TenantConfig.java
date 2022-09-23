@@ -15,12 +15,15 @@ package org.entando.entando.aps.system.services.tenant;
 
 import java.io.Serializable;
 import java.util.HashMap;
+
 /**
  * @author E.Santoboni
  */
 public class TenantConfig extends HashMap<String, Object> implements Serializable {
     
     public static final String TENANT_CODE_PROPERTY = "tenantCode";
+    
+    public static final String DOMAIN_PREFIX_PROPERTY = "domainPrefix";
     
     public static final String KC_ENABLED_PROPERTY = "kcEnabled";
     public static final String KC_AUTH_URL_PROPERTY = "kcAuthUrl";
@@ -42,65 +45,73 @@ public class TenantConfig extends HashMap<String, Object> implements Serializabl
         clone.putAll(this);
         return clone;
     }
-    
+
 	public String getTenantCode() {
-		return this.get(TENANT_CODE_PROPERTY).toString();
+		return this.getProperty(TENANT_CODE_PROPERTY);
 	}
 
+    public String getDomainPrefix() {
+		return this.getProperty(DOMAIN_PREFIX_PROPERTY);
+    }
+
     public boolean isKcEnabled() {
-        Object enabled = this.get(KC_ENABLED_PROPERTY);
+        String enabled = this.getProperty(KC_ENABLED_PROPERTY);
         if (null != enabled) {
-            return Boolean.valueOf(enabled.toString());
+            return Boolean.valueOf(enabled);
         }
         return false;
     }
 
     public String getKcAuthUrl() {
-		return this.get(KC_AUTH_URL_PROPERTY).toString();
+		return this.getProperty(KC_AUTH_URL_PROPERTY);
     }
 
     public String getKcRealm() {
-        return this.get(KC_REALM_PROPERTY).toString();
+        return this.getProperty(KC_REALM_PROPERTY);
     }
 
     public String getKcClientId() {
-        return this.get(KC_CLIENT_ID_PROPERTY).toString();
+        return this.getProperty(KC_CLIENT_ID_PROPERTY);
     }
 
     public String getKcClientSecret() {
-        return this.get(KC_CLIENT_SECRET_PROPERTY).toString();
+        return this.getProperty(KC_CLIENT_SECRET_PROPERTY);
     }
 
     public String getKcPublicClientId() {
-        return this.get(KC_PUBLIC_CLIENT_PROPERTY).toString();
+        return this.getProperty(KC_PUBLIC_CLIENT_PROPERTY);
     }
 
     public String getKcSecureUris() {
-        return this.get(KC_SECURE_URIS_PROPERTY).toString();
+        return this.getProperty(KC_SECURE_URIS_PROPERTY);
     }
 
     public String getKcDefaultAuthorizations() {
-        return this.get(KC_DEFAULT_AUTH_PROPERTY).toString();
+        return this.getProperty(KC_DEFAULT_AUTH_PROPERTY);
     }
 
     public String getDbDriverClassName() {
-        return this.get(DB_DRIVER_CLASS_NAME_PROPERTY).toString();
+        return this.getProperty(DB_DRIVER_CLASS_NAME_PROPERTY);
     }
 
     public String getDbUrl() {
-        return this.get(DB_URL_PROPERTY).toString();
+        return this.getProperty(DB_URL_PROPERTY);
     }
 
     public String getDbUsername() {
-        return this.get(DB_USERNAME_PROPERTY).toString();
+        return this.getProperty(DB_USERNAME_PROPERTY);
     }
 
     public String getDbPassword() {
-        return this.get(DB_PASSWORD_PROPERTY).toString();
+        return this.getProperty(DB_PASSWORD_PROPERTY);
     }
 
     public String getProperty(String name) {
-        return this.get(name).toString();
+        Object property = this.get(name);
+        if (null != property) {
+            return property.toString();
+        }
+        return null;
     }
     
 }
