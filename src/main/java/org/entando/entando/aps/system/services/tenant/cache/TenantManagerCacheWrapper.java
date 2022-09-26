@@ -74,17 +74,25 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
     @Override
     public String getCodeByDomainPrefix(String domainPrefix) {
         Cache cache = this.getCache();
+        String code = null;
         Map<String,String> mapping = (Map<String,String>) this.get(cache, TENANT_EXT_MAPPING, Map.class);
         if (null != mapping && !StringUtils.isBlank(mapping.get(domainPrefix))) {
-            return mapping.get(domainPrefix);
+            code = mapping.get(domainPrefix);
         }
-        return domainPrefix;
+        if (null == code && this.getCodes(cache).contains(domainPrefix)) {
+            return domainPrefix;
+        }
+        return null;
     }
     
     @Override
     @SuppressWarnings("unchecked")
     public List<String> getCodes() {
         Cache cache = this.getCache();
+        return this.getCodes(cache);
+    }
+    
+    protected List<String> getCodes(Cache cache) {
         List<String> codes = (List<String>) this.get(cache, this.getCodesCacheKey(), List.class);
         if (null != codes) {
             return new ArrayList<>(codes);

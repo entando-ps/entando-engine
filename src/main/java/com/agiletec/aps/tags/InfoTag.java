@@ -35,15 +35,15 @@ import org.entando.entando.aps.tags.ExtendedTagSupport;
  * "startLang" returns the code of start language of web browsing<br/>
  * "defaultLang" returns the code of default language<br/>
  * "currentLang" returns the code of current language<br/>
- * "langs" returns the list of the languages defined in the system<br/> 
+ * "langs" returns the list of the languages defined in the system<br/>
  * "systemParam" returns the value of the system parameter specified in the "paramName" attribute.
- * 
+ *
  * @author Wiz of Id <wiz@apritisoftware.it>
  */
 public class InfoTag extends ExtendedTagSupport {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(InfoTag.class);
-	
+
 	@Override
 	public int doStartTag() throws JspException {
 		ServletRequest request =  this.pageContext.getRequest();
@@ -76,33 +76,32 @@ public class InfoTag extends ExtendedTagSupport {
 		}
 		return EVAL_BODY_INCLUDE;
 	}
-	
-	private Lang extractStartLang() {
-		Lang startLang = null;
-		ConfigInterface baseConfigManager = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, this.pageContext);
-		ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
-		try {
-			String startLangFromBrowser = baseConfigManager.getParam(SystemConstants.CONFIG_PARAM_START_LANG_FROM_BROWSER);
-			if (null != startLangFromBrowser && startLangFromBrowser.equalsIgnoreCase("true")) {
-				ServletRequest request = this.pageContext.getRequest();
-				if (request instanceof HttpServletRequest) {
-					String headerLang = ((HttpServletRequest) request).getHeader("Accept-Language");
-					if (null != headerLang && headerLang.length() >= 2) {
-						String langCode = headerLang.substring(0, 2);
-						startLang = langManager.getLang(langCode);
-					}
-				}
-			}
-		} catch (Throwable t) {
-			_logger.error("Error extracting start lang", t);
-		} finally {
-			if (null == startLang) {
-				startLang = langManager.getDefaultLang();
-			}
-		}
-		return startLang;
-	}
-	
+
+    private Lang extractStartLang() {
+        Lang startLang = null;
+        ConfigInterface baseConfigManager = (ConfigInterface) ApsWebApplicationUtils.getBean(SystemConstants.BASE_CONFIG_MANAGER, this.pageContext);
+        ILangManager langManager = (ILangManager) ApsWebApplicationUtils.getBean(SystemConstants.LANGUAGE_MANAGER, this.pageContext);
+        try {
+            String startLangFromBrowser = baseConfigManager.getParam(SystemConstants.CONFIG_PARAM_START_LANG_FROM_BROWSER);
+            if (null != startLangFromBrowser && startLangFromBrowser.equalsIgnoreCase("true")) {
+                ServletRequest request = this.pageContext.getRequest();
+                if (request instanceof HttpServletRequest) {
+                    String headerLang = ((HttpServletRequest) request).getHeader("Accept-Language");
+                    if (null != headerLang && headerLang.length() >= 2) {
+                        String langCode = headerLang.substring(0, 2);
+                        startLang = langManager.getLang(langCode);
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            _logger.error("Error extracting start lang", t);
+        }
+        if (null == startLang) {
+            startLang = langManager.getDefaultLang();
+        }
+        return startLang;
+    }
+
 	/**
 	 * Performs the generation of the label and make it available for immediate output or places it
 	 * in a variable
@@ -130,7 +129,7 @@ public class InfoTag extends ExtendedTagSupport {
 		}
 		return EVAL_PAGE;
 	}
-	
+
 	@Override
 	public void release() {
 		super.release();
@@ -170,7 +169,7 @@ public class InfoTag extends ExtendedTagSupport {
 		return _varName;
 	}
 
-	/** 
+	/**
 	 * Return the name of the requested system parameter.
 	 * This value is ignored when the value of the "key" attribute is other than "systemParam"
 	 * @return The name of the system parameter.
@@ -187,10 +186,10 @@ public class InfoTag extends ExtendedTagSupport {
 	public void setParamName(String paramName) {
 		this._paramName = paramName;
 	}
-	
+
 	private String _key;
 	private String _varName;
 	private String _paramName;
 	private Object _info;
-	
+
 }
