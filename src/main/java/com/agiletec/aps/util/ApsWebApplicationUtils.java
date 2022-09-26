@@ -40,11 +40,7 @@ public class ApsWebApplicationUtils {
     public static String extractCurrentTenantCode(HttpServletRequest request) {
         String domainPrefix = request.getServerName().split("\\.")[0];
         ITenantManager tenantManager = ApsWebApplicationUtils.getBean(ITenantManager.class, request);
-        String tenantCode = tenantManager.getCodeByDomainPrefix(domainPrefix);
-        if (tenantManager.exists(tenantCode)) {
-            return tenantCode;
-        }
-        return null;
+        return tenantManager.getCodeByDomainPrefix(domainPrefix);
     }
 	
 	/**
