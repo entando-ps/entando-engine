@@ -111,11 +111,6 @@ public class TenantManager extends AbstractService implements ITenantManager {
     public String getCodeByDomainPrefix(String domainPrefix) {
         return this.getCacheWrapper().getCodeByDomainPrefix(domainPrefix);
     }
-
-    @Override
-    public TenantConfig getConfigByDomainPrefix(String domainPrefix) {
-        return this.getConfig(this.getCodeByDomainPrefix(domainPrefix));
-    }
     
     protected Map<String, DataSource> getDataSources() {
         return dataSources;
