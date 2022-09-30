@@ -81,8 +81,9 @@ public class TenantManagerCacheWrapper extends AbstractGenericCacheWrapper<Tenan
         }
         if (null == code && this.getCodes(cache).contains(domainPrefix)) {
             return domainPrefix;
+        } else {
+            return code;
         }
-        return null;
     }
     
     @Override
