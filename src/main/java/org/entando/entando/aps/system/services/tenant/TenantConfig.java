@@ -39,6 +39,11 @@ public class TenantConfig extends HashMap<String, Object> implements Serializabl
     public static final String DB_USERNAME_PROPERTY = "dbUsername";
     public static final String DB_PASSWORD_PROPERTY = "dbPassword";
     
+    public static final String DB_MAX_TOTAL_PROPERTY = "dbMaxTotal";
+    public static final String DB_MAX_IDLE_PROPERTY = "dbMaxIdle";
+    public static final String DB_MAX_WAIT_MS_PROPERTY = "dbMaxWaitMillis";
+    public static final String DB_INITIAL_SIZE_PROPERTY = "dbInitialSize";
+    
     @Override
     public TenantConfig clone() {
         TenantConfig clone = new TenantConfig();

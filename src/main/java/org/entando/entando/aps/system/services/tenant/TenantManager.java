@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.entando.entando.aps.system.services.tenant.cache.ITenantManagerCacheWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,17 +92,30 @@ public class TenantManager extends AbstractService implements ITenantManager {
             basicDataSource.setUsername(config.getDbUsername());
             basicDataSource.setPassword(config.getDbPassword());
             basicDataSource.setUrl(config.getDbUrl());
-            basicDataSource.setMaxTotal(100);
-            basicDataSource.setMaxIdle(30);
-            basicDataSource.setMaxWaitMillis(20000);
-            // maxTotal="100" maxIdle="30" maxWaitMillis="20000"
-            basicDataSource.setInitialSize(5);
+            basicDataSource.setMaxTotal(this.getDbConnectionParam(config, TenantConfig.DB_MAX_TOTAL_PROPERTY, ITenantManager.DEFAULT_DB_MAX_TOTAL));
+            basicDataSource.setMaxIdle(this.getDbConnectionParam(config, TenantConfig.DB_MAX_IDLE_PROPERTY, ITenantManager.DEFAULT_DB_MAX_IDLE));
+            basicDataSource.setMaxWaitMillis(this.getDbConnectionParam(config, TenantConfig.DB_MAX_WAIT_MS_PROPERTY, ITenantManager.DEFAULT_DB_MAX_WAIT_MS));
+            basicDataSource.setInitialSize(this.getDbConnectionParam(config, TenantConfig.DB_INITIAL_SIZE_PROPERTY, ITenantManager.DEFAULT_DB_INITIAL_SIZE));
             dataSource = basicDataSource;
             this.getDataSources().put(tenantCode, dataSource);
         }
         return dataSource;
     }
-
+    
+    private int getDbConnectionParam(TenantConfig config, String paramName, int defaultValue) {
+        String value = config.getProperty(paramName);
+        if (StringUtils.isBlank(value)) {
+            return defaultValue;
+        }
+        int intValue = 0;
+        try {
+            intValue = Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            intValue = defaultValue;
+        }
+        return intValue;
+    }
+    
     @Override
     public TenantConfig getConfig(String tenantCode) {
         return this.getCacheWrapper().getConfig(tenantCode);

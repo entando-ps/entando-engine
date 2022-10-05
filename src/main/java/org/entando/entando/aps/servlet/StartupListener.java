@@ -75,7 +75,7 @@ public class StartupListener extends org.springframework.web.context.ContextLoad
         
         WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(svCtx);
         ITenantManager tenantManager = wac.getBean(ITenantManager.class);
-        tenantManager.getCodes().parallelStream().forEach(tenantCode -> {
+        tenantManager.getCodes().stream().forEach(tenantCode -> {
             EntThreadLocal.set(ITenantManager.THREAD_LOCAL_TENANT_CODE, tenantCode);
             try {
                 ApsWebApplicationUtils.executeSystemRefresh(svCtx);
