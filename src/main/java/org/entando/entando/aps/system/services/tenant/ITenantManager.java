@@ -23,6 +23,11 @@ public interface ITenantManager {
     
     public static final String THREAD_LOCAL_TENANT_CODE = "threadLocal_tenantCode";
     
+    public static final int DEFAULT_DB_MAX_TOTAL = 10;
+    public static final int DEFAULT_DB_MAX_IDLE = 2;
+    public static final int DEFAULT_DB_MAX_WAIT_MS = 20000;
+    public static final int DEFAULT_DB_INITIAL_SIZE = 2;
+    
     public boolean exists(String tenantCode);
     
     public List<String> getCodes();
