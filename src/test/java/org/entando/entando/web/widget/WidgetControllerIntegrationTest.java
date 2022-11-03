@@ -426,8 +426,7 @@ class WidgetControllerIntegrationTest extends AbstractControllerIntegrationTest 
             Assertions.assertNull(this.widgetTypeManager.getWidgetType(newWidgetCode));
         }
     }
-
-
+    
     @Test
     void testAddWidgetAlreadyExists() throws Exception {
         UserDetails user = new OAuth2TestUtils.UserBuilder("jack_bauer", "0x24").grantedToRoleAdmin().build();
@@ -502,7 +501,7 @@ class WidgetControllerIntegrationTest extends AbstractControllerIntegrationTest 
             resultMaster.andExpect(jsonPath("$.payload.parameters[2].description", is("Description of parameter 3")));
             resultMaster.andExpect(jsonPath("$.payload.parameters[3].code", is("param4")));
             resultMaster.andExpect(jsonPath("$.payload.parameters[3].description", nullValue()));
-            resultMaster.andExpect(jsonPath("$.payload.action", is("configAction")));
+            resultMaster.andExpect(jsonPath("$.payload.configUiName", is("configAction")));
             
             widgetType = this.widgetTypeManager.getWidgetType(code);
             Assertions.assertNotNull(widgetType);
