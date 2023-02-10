@@ -33,9 +33,9 @@ public class TenantManager extends AbstractService implements ITenantManager {
     
     private static final Logger logger = LoggerFactory.getLogger(TenantManager.class);
     
-    private Map<String, DataSource> dataSources = new HashMap<>();
+    private transient Map<String, DataSource> dataSources = new HashMap<>();
     
-    private ITenantManagerCacheWrapper cacheWrapper;
+    private transient ITenantManagerCacheWrapper cacheWrapper;
 
     @Override
     public void init() throws Exception {

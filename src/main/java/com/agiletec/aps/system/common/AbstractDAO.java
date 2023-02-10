@@ -39,8 +39,8 @@ public abstract class AbstractDAO implements Serializable {
 
 	private static final EntLogger _logger = EntLogFactory.getSanitizedLogger(AbstractDAO.class);
     
-    private DataSource _dataSource;
-    private ITenantManager tenantManager;
+    private transient DataSource _dataSource;
+    private transient ITenantManager tenantManager;
 	
 	/**
 	 * Traccia un'eccezione e rilancia una eccezione runtime 
