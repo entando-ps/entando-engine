@@ -39,6 +39,8 @@ public class TenantConfig extends HashMap<String, Object> implements Serializabl
     public static final String DB_USERNAME_PROPERTY = "dbUsername";
     public static final String DB_PASSWORD_PROPERTY = "dbPassword";
     
+    private static final String DB_MIGRATION_STRATEGY = "dbMigrationStrategy";
+    
     public static final String DB_MAX_TOTAL_PROPERTY = "dbMaxTotal";
     public static final String DB_MAX_IDLE_PROPERTY = "dbMaxIdle";
     public static final String DB_MAX_WAIT_MS_PROPERTY = "dbMaxWaitMillis";
@@ -109,6 +111,10 @@ public class TenantConfig extends HashMap<String, Object> implements Serializabl
 
     public String getDbPassword() {
         return this.getProperty(DB_PASSWORD_PROPERTY);
+    }
+    
+    public String getDbMigrationStrategy() {
+        return this.getProperty(DB_MIGRATION_STRATEGY);
     }
 
     public String getProperty(String name) {

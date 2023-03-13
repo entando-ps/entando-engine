@@ -14,6 +14,7 @@
 package org.entando.entando.aps.system.init;
 
 import com.agiletec.aps.system.ApsSystemUtils;
+import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.aps.util.DateConverter;
 import com.agiletec.aps.util.FileTextReader;
@@ -30,11 +31,13 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -62,11 +65,14 @@ import org.entando.entando.aps.system.init.model.SystemInstallationReport.Status
 import org.entando.entando.aps.system.init.util.TableDataUtils;
 import org.entando.entando.aps.system.services.storage.IStorageManager;
 import org.entando.entando.aps.system.services.storage.StorageManagerUtil;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
+import org.entando.entando.aps.system.services.tenant.TenantConfig;
 import org.entando.entando.ent.exception.EntException;
 import org.entando.entando.ent.exception.EntRuntimeException;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
@@ -93,26 +99,28 @@ public class DatabaseManager extends AbstractInitializerManager
     private int lockFallbackMinutes;
 
     private ServletContext servletContext;
+    private ITenantManager tenantManager;
 
     public void init() {
         logger.debug("{} ready", this.getClass().getName());
     }
-
+    
     @Override
-    public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws Exception {
+    public SystemInstallationReport installDatabase(SystemInstallationReport report, DatabaseMigrationStrategy defaultMigrationStrategy) throws Exception {
         String lastLocalBackupFolder = null;
-        migrationStrategy = (null == migrationStrategy) ? DatabaseMigrationStrategy.DISABLED : migrationStrategy;
+        DatabaseMigrationStrategy strategy = Optional.ofNullable(this.getTenantMigrationStrategy())
+                .orElse(Optional.ofNullable(defaultMigrationStrategy).orElse(DatabaseMigrationStrategy.DISABLED));
         if (null == report) {
             report = SystemInstallationReport.getInstance();
-            lastLocalBackupFolder = checkRestore(report, migrationStrategy);
+            lastLocalBackupFolder = checkRestore(report, strategy);
         }
 
         // Check if we are dealing with an old database version (not Liquibase compliant - Entando <= 6.3.2)
         legacyDatabaseCheck();
 
         try {
-            initComponents(report, migrationStrategy);
-            if (DatabaseMigrationStrategy.AUTO.equals(migrationStrategy) && report.getStatus()
+            initComponents(report, strategy);
+            if (DatabaseMigrationStrategy.AUTO.equals(strategy) && report.getStatus()
                     .equals(Status.RESTORE)) {
                 //ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'
                 if (null != lastLocalBackupFolder) {
@@ -135,6 +143,28 @@ public class DatabaseManager extends AbstractInitializerManager
         return report;
     }
 
+    private DatabaseMigrationStrategy getTenantMigrationStrategy() {
+        String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+        if (null == tenantCode) {
+            return null;
+        }
+        TenantConfig config = this.getTenantManager().getConfig(tenantCode);
+        if (null == config) {
+            return null;
+        }
+        String strategyString = config.getDbMigrationStrategy();
+        if (null == strategyString) {
+            return null;
+        }
+        try {
+            return Enum.valueOf(DatabaseMigrationStrategy.class, strategyString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger.warn(String.format("Migration Strategy - , Tenant '%s', Invalid value '%s' - Allowed values disabled|auto|generate_sql",
+                    tenantCode, strategyString));
+            return null;
+        }
+    }
+    
     private String checkRestore(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) {
         String lastLocalBackupFolder = null;
         if (!DatabaseMigrationStrategy.DISABLED.equals(migrationStrategy) && !Environment.test.equals(this.getEnvironment())) {
@@ -170,20 +200,22 @@ public class DatabaseManager extends AbstractInitializerManager
     }
 
     private void legacyDatabaseCheck() throws DatabaseMigrationException, SQLException {
-
-        for (DataSource dataSource : defaultDataSources) {
-
+        DataSource tenantDataSource = null;
+        String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+        if (null != tenantCode) {
+            tenantDataSource = this.getTenantManager().getDatasource(tenantCode);
+        }
+        List<DataSource> dss = (null != tenantDataSource) ? Arrays.asList(tenantDataSource) : this.defaultDataSources;
+        for (DataSource dataSource : dss) {
             Connection connection = null;
             ResultSet rs = null;
             try {
                 connection = dataSource.getConnection();
                 final DatabaseMetaData databaseMetaData = connection.getMetaData();
-
                 // Liquibase tables are relevant only if related to portdb/servdb schema/catalog, we are not interested in others.
                 // Each DB vendor has a different objects hierarchy so we can't check only for schema or catalog
                 rs = databaseMetaData.getTables(connection.getCatalog(), connection.getSchema(), null,
                         new String[]{"TABLE"});
-
                 boolean liquibaseChangelogTableFound = false;
                 int tablesCount = 0;
                 while (rs.next()) {
@@ -193,7 +225,6 @@ public class DatabaseManager extends AbstractInitializerManager
                     }
                     tablesCount++;
                 }
-
                 // If we have some tables in the DB but Liquibase changelog table is not found we are running on a legacy DB
                 if (!liquibaseChangelogTableFound && tablesCount > 0) {
                     throw new DatabaseMigrationException(
@@ -260,7 +291,7 @@ public class DatabaseManager extends AbstractInitializerManager
         Liquibase liquibase = null;
         Writer writer = null;
         try {
-            DataSource dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
+            DataSource dataSource = this.getRightDatasource(dataSourceName);
             connection = dataSource.getConnection();
             JdbcConnection liquibaseConnection = new JdbcConnection(connection);
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
@@ -301,6 +332,15 @@ public class DatabaseManager extends AbstractInitializerManager
             }
         }
         return changeSetToExecute;
+    }
+    
+    private DataSource getRightDatasource(String dataSourceName) {
+        DataSource tenantDataSource = null;
+        String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+        if (null != tenantCode) {
+            tenantDataSource = this.getTenantManager().getDatasource(tenantCode);
+        }
+        return (null != tenantDataSource) ? tenantDataSource : (DataSource) this.getBeanFactory().getBean(dataSourceName);
     }
 
     /**
@@ -352,7 +392,7 @@ public class DatabaseManager extends AbstractInitializerManager
                 return;
             }
             for (String dataSourceName : dataSourceNames) {
-                DataSource dataSource = (DataSource) this.getBeanFactory().getBean(dataSourceName);
+                DataSource dataSource = this.getRightDatasource(dataSourceName);
                 Resource resource = defaultDump.get(dataSourceName);
                 String script = this.readFile(resource);
                 if (null != script && script.trim().length() > 0) {
@@ -635,4 +675,13 @@ public class DatabaseManager extends AbstractInitializerManager
     public void setLockFallbackMinutes(int lockFallbackMinutes) {
         this.lockFallbackMinutes = lockFallbackMinutes;
     }
+
+    protected ITenantManager getTenantManager() {
+        return tenantManager;
+    }
+    @Autowired
+    public void setTenantManager(ITenantManager tenantManager) {
+        this.tenantManager = tenantManager;
+    }
+    
 }
