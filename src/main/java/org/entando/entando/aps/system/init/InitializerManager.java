@@ -26,6 +26,7 @@ import org.entando.entando.aps.system.init.model.ComponentInstallationReport;
 import org.entando.entando.aps.system.init.model.IPostProcess;
 import org.entando.entando.aps.system.init.model.InvalidPostProcessResultException;
 import org.entando.entando.aps.system.init.model.SystemInstallationReport;
+import org.entando.entando.aps.system.services.tenant.ITenantManager;
 import org.entando.entando.ent.util.EntLogging.EntLogger;
 import org.entando.entando.ent.util.EntLogging.EntLogFactory;
 import org.springframework.beans.BeansException;
@@ -196,6 +197,8 @@ public class InitializerManager extends AbstractInitializerManager implements II
         }
         try {
             InstallationReportDAO dao = new InstallationReportDAO();
+            ITenantManager tenantManager = this.getBeanFactory().getBean(ITenantManager.class);
+            dao.setTenantManager(tenantManager);
             DataSource dataSource = (DataSource) this.getBeanFactory().getBean("portDataSource");
             dao.setDataSource(dataSource);
             dao.saveConfigItem(report.toXml(), this.getConfigVersion());
