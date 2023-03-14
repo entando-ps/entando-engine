@@ -13,7 +13,6 @@
  */
 package org.entando.entando.aps.system.init;
 
-import com.agiletec.aps.system.ApsSystemUtils;
 import com.agiletec.aps.system.EntThreadLocal;
 import com.agiletec.aps.util.ApsWebApplicationUtils;
 import com.agiletec.aps.util.DateConverter;
