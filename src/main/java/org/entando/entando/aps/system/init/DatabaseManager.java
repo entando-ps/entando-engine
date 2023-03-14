@@ -186,6 +186,9 @@ public class DatabaseManager extends AbstractInitializerManager
 
     private void initComponents(SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws DatabaseMigrationException, EntException {
         List<Component> components = this.getComponentManager().getCurrentComponents();
+         long start = System.currentTimeMillis();
+        String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
+        logger.warn("********************************");
         String[] dataSourceNames = this.extractBeanNames(DataSource.class);
         Map<String, List<String>> changeSetMapFiles = new HashMap<>();
         Map<String, String> componentsForChangeLog = new HashMap<>();
@@ -204,6 +207,8 @@ public class DatabaseManager extends AbstractInitializerManager
             }
         }
         List<ChangeSetStatus> pendingChangeSet = this.initLiquiBaseResources(changeSetMapFiles, componentsForChangeLog, report, migrationStrategy);
+        long end = System.currentTimeMillis();
+        logger.warn("***** TENANT " + tenantCode + " ********** TIME" + (end-start) + " ************");
         if (!pendingChangeSet.isEmpty()) {
             throw new DatabaseMigrationException(pendingChangeSet);
         }
