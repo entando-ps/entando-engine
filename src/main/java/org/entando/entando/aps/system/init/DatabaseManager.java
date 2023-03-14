@@ -286,20 +286,29 @@ public class DatabaseManager extends AbstractInitializerManager
             String dataSourceName, SystemInstallationReport report, DatabaseMigrationStrategy migrationStrategy) throws LiquibaseException, IOException, SQLException {
         List<ChangeSetStatus> changeSetToExecute = new ArrayList<>();
         Connection connection = null;
+        JdbcConnection liquibaseConnection = null;
+        Database database = null;
         try {
             DataSource dataSource = this.getRightDatasource(dataSourceName);
             connection = dataSource.getConnection();
-            JdbcConnection liquibaseConnection = new JdbcConnection(connection);
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
+            liquibaseConnection = new JdbcConnection(connection);
+            database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
             for (String changeSetFile : changeSetFiles) {
                 List<ChangeSetStatus> singleChangesetToExecute = 
                         this.executeSingleLiquibaseUpdate(database, changeSetFile, componentsForChangeLog, dataSourceName, report, migrationStrategy);
                 changeSetToExecute.addAll(singleChangesetToExecute);
             }
+            database.close();
         } catch (Exception e) {
             logger.error("Error executing liquibase update", e);
             throw e;
         } finally {
+            if (null != database) {
+                database.close();
+            }
+            if (null != liquibaseConnection) {
+                liquibaseConnection.close();
+            }
             if (null != connection) {
                 connection.close();
             }
