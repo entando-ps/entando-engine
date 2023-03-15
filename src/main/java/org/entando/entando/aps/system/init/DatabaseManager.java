@@ -53,6 +53,8 @@ import liquibase.lockservice.DatabaseChangeLogLock;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.entando.entando.aps.system.init.AbstractInitializerManager.Environment;
+import org.entando.entando.aps.system.init.IDatabaseManager.DatabaseType;
 import org.entando.entando.aps.system.init.IInitializerManager.DatabaseMigrationStrategy;
 import org.entando.entando.aps.system.init.exception.DatabaseMigrationException;
 import org.entando.entando.aps.system.init.model.Component;
@@ -187,7 +189,7 @@ public class DatabaseManager extends AbstractInitializerManager
         List<Component> components = this.getComponentManager().getCurrentComponents();
          long start = System.currentTimeMillis();
         String tenantCode = (String) EntThreadLocal.get(ITenantManager.THREAD_LOCAL_TENANT_CODE);
-        logger.warn("********************************");
+        logger.warn("******************************** tenantCode " + tenantCode);
         String[] dataSourceNames = this.extractBeanNames(DataSource.class);
         Map<String, List<String>> changeSetMapFiles = new HashMap<>();
         Map<String, String> componentsForChangeLog = new HashMap<>();
@@ -288,16 +290,21 @@ public class DatabaseManager extends AbstractInitializerManager
         JdbcConnection liquibaseConnection = null;
         Database database = null;
         try {
+            //logger.warn("***** dataSourceName " + dataSourceName);
             DataSource dataSource = this.getRightDatasource(dataSourceName);
+            //logger.warn("***** dataSource " + dataSource);
             connection = dataSource.getConnection();
+            //logger.warn("***** connection " + connection);
             liquibaseConnection = new JdbcConnection(connection);
+            //logger.warn("***** liquibaseConnection " + liquibaseConnection);
             database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(liquibaseConnection);
+            //logger.warn("***** database " + database);
             for (String changeSetFile : changeSetFiles) {
+                //logger.warn("***** changeSetFile " + changeSetFile);
                 List<ChangeSetStatus> singleChangesetToExecute = 
                         this.executeSingleLiquibaseUpdate(database, changeSetFile, componentsForChangeLog, dataSourceName, report, migrationStrategy);
                 changeSetToExecute.addAll(singleChangesetToExecute);
             }
-            database.close();
         } catch (Exception e) {
             logger.error("Error executing liquibase update", e);
             throw e;
@@ -305,9 +312,11 @@ public class DatabaseManager extends AbstractInitializerManager
             if (null != database) {
                 database.close();
             }
-            if (null != liquibaseConnection) {
+            /*
+            if (null != liquibaseConnection.) {
                 liquibaseConnection.close();
             }
+            */
             if (null != connection) {
                 connection.close();
             }
@@ -324,7 +333,8 @@ public class DatabaseManager extends AbstractInitializerManager
         Liquibase liquibase = null;
         Writer writer = null;
         try {
-            liquibase = new Liquibase(changeSetFile, new ClassLoaderResourceAccessor(), database); // NOSONAR
+            String modifiedChangeSetPath = changeSetFile.replaceFirst("classpath:liquibase", "classpath:/liquibase");
+            liquibase = new Liquibase(modifiedChangeSetPath, new ClassLoaderResourceAccessor(), database); // NOSONAR
             this.releaseLockIfNeeded(liquibase);
             liquibaseReport.getDatabaseStatus().put(dataSourceName, Status.INIT);
             Contexts contexts = getContexts(report.getStatus());
@@ -358,9 +368,11 @@ public class DatabaseManager extends AbstractInitializerManager
             if (null != writer) {
                 writer.close();
             }
+            /*
             if (null != liquibase) {
                 handleLiquibaseClose(liquibase);
             }
+            */
         }
         return changeSetToExecute;
     }
